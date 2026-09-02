@@ -42,6 +42,7 @@ Get help on the built-in `rnorm` function.
 
 ```{r rnorm-help, eval=FALSE}
 ## Your code here
+?rnorm
 ```
 
 ## (Not) Executing functions
@@ -61,6 +62,7 @@ Show the source code for `lm`.
 
 ```{r rnorm-source}
 ## Your code here
+lm
 ```
 
 ## Executing functions (for real)
@@ -112,6 +114,7 @@ Using what you learned in q3, generate a random sample of size `n = 10` using `r
 
 ```{r}
 ## Write your code here
+rnorm(1, mean = 2, sd =1)
 ```
 
 ## Adapting examples
@@ -131,6 +134,7 @@ Look up the documentation for the function `tribble`, and figure out how to crea
 
 ```{r}
 ## Write your code here
+tribble(~x, ~y, "a", 1, "b", 2)
 ```
 
 
