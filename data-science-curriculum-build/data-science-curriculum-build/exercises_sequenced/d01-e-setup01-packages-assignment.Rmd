@@ -21,17 +21,25 @@ This is a quick warmup to get you in this habit.
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+```{r setup, include=FALSE}
+```
+
 ### __q1__ Create a new code chunk and prepare to load the `tidyverse`.
 
 In [RStudio](https://bookdown.org/yihui/rmarkdown/r-code.html) use the shortcut
 `Ctrl + Alt + I` (`Cmd + Option + I` on Mac). Type the command
 `library(tidyverse`).
+```{r}
+library(tidyverse)
+```
 
 
 Make sure to load packages at the *beginning* of your notebooks! This is a
 best-practice.
 
 ### __q2__ Run the chunk with `library(tidyverse)`. What packages are loaded?
+<!-- dplyr, forcats, ggpllt2, lubridate, purrr, readr, stringr, tibble, tidyr
 
 In
 [RStudio](https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts)
@@ -40,8 +48,7 @@ cursor.
 
 
 ### __q3__ What are the main differences between `install.packages()` and `library()`? How often do you need to call each one?
-
-
+<!-- install.packages() installs the library and then 'library()' shows you what's in the package -->
 <!-- include-exit-ticket -->
 # Exit Ticket
 <!-- -------------------------------------------------- -->
