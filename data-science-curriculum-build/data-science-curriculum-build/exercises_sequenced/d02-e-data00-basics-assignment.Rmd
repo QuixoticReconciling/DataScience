@@ -52,10 +52,13 @@ Some nomenclature:
 *Hint*: You can run `?diamonds` to get information on a built-in dataset.
 
 ```{r load-packages, eval=FALSE}
+diamonds$cut
+diamonds$color
+diamonds$clarity
 ```
 
 ### __q2__ Run `glimpse(diamonds)`; what variables does `diamonds` have?
-
+<!-- it shows all of the runnable commands in diamonds -->
 
 ### __q3__ Run `summary(diamonds)`; what are the common values for each of the
 variables? How widely do each of the variables vary?
@@ -70,6 +73,7 @@ summary(diamonds)
 **Observations**:
 
 - (Write your observations here!)
+<!-- some values vary within 1-5 like carat, and others vary much more widely like price. Depth varies from 43-79, table varies from 43-95. -->
 
 You should always analyze your dataset in the simplest way possible, build
 hypotheses, and devise more specific analyses to probe those hypotheses. The
@@ -103,6 +107,8 @@ turn it into `diamonds %>% glimpse()`.
 ### __q4__ Use the pipe operator to re-write `summary(diamonds)`.
 
 ```{r q4-task}
+diamonds %>%
+  summary()
 ```
 
 ## Reading Data
@@ -113,7 +119,7 @@ So far we've only been looking at built-in datasets. Ultimately, we'll want to r
 ### __q5__ Use the function `read_csv()` to load the file `"./data/tiny.csv"`.
 
 ```{r q5-task}
-
+read_csv("./data/tiny.csv")
 df_q5
 ```
 
