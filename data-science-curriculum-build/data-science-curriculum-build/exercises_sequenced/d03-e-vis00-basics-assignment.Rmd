@@ -26,12 +26,17 @@ Inspect the `diamonds` dataset. What do the `cut`, `color`, and `clarity` variab
 *Hint*: We learned how to inspect a dataset in `e-data-00-basics`!
 
 ```{r q1-task, eval=FALSE}
+diamonds$cut
+diamonds$color
+diamonds$clarity
 ```
 
 ### __q2__ Standard checks
 
 Use your "standard checks" to determine what variables the dataset has.
-
+```{r}
+glimpse(diamonds)
+```
 
 Now that we have the list of variables in the dataset, we know what we can visualize!
 
@@ -73,12 +78,13 @@ Using `ggplot`, visualize `price` vs `carat` with points. What trend do you obse
 
 ```{r q3-task}
 ## TODO: Complete this code
-ggplot(diamonds)
+ggplot(diamonds) +
+  geom_point(mapping = aes(x = carat, y = price))
 ```
 
 **Observations**:
 
-- (Write your observations here!)
+- The price rises as the number of carats rise. Another thing that happens is that there are a lot more points of data at carats 1, 1.5, and 2, suggesting people are more likely to buy diamonds with round numbers like 1, instead of diamond values like 0.99.
 
 ## A note on *aesthetics*
 
@@ -107,6 +113,8 @@ As with any R function, we can consult the documentation to learn more.
 
 Look up the documentation for `geom_point()`, and scroll down to the *Aesthetics* section. What aesthetics (other than `x` and `y`) does `geom_point()` accept?
 
+alpha, color, fill, group, shape, size, and stroke
+
 ### __q5__ Visualize a third variable
 
 Adapt your code from q3 to visualize `price`, `carat`, and `cut` simultaneously.
@@ -115,12 +123,14 @@ Adapt your code from q3 to visualize `price`, `carat`, and `cut` simultaneously.
 
 ```{r q4-task}
 ## TODO: Complete this code
-ggplot(diamonds)
+ggplot(diamonds) +
+  geom_point(mapping = aes(x = carat, y = cut, color = price))
 ```
 
 **Observations**:
 
-- (Write your observations here!)
+- Additional observation is that the more carats a diamond has, the lower the quality will likely be.
+- This is not a conclusive observation as there are very few data points at higher carat values.
 
 <!-- include-exit-ticket -->
 # Exit Ticket
