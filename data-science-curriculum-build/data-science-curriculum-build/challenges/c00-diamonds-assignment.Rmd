@@ -55,22 +55,30 @@ In this first stage, you will explore the `diamonds` dataset and document your o
 ```{r q1-task}
 ## TASK: Plot `price` vs `carat` below
 ## Your code here!
+ggplot(data = diamonds, mapping = aes(y = price, x = carat), ylab="price", xlab="carat", main="Price vs. Carat") +
+  geom_point (col = "blue") +
+  geom_smooth(col = "green")
 ```
 
 **Observations**:
 
-- (Write your observations here!)
+- Price increases as the carats increase
+- Price seems to steadily increase between .75-2. both above and below those carat values price increase is more shallow
+- At higher carat values, there are much fewer data points which make it harder to accurately predict trends at those values.
 
 ### __q2__ Create a visualization showing variables `carat`, `price`, and `cut` simultaneously. Experiment with which variable you assign to which aesthetic (`x`, `y`, etc.) to find an effective visual.
 
 ```{r q2-task}
 ## TASK: Plot `price`, `carat`, and `cut` below
 ## Your code here!
+ggplot(diamonds) +
+  geom_point(mapping = aes(x = carat, y = cut, color = price))
 ```
 
 **Observations**:
 
-- (Write your observations here!)
+- Additional observation is that the more carats a diamond has, the lower the quality will likely be.
+- This is not a conclusive observation as there are very few data points at higher carat values.
 
 
 # Communication
