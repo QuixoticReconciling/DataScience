@@ -59,7 +59,7 @@ diamonds %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- This is wrong, there are more "ideal" cut diamonds than any other cut type
 
 ## Hypothesis 2
 
@@ -78,7 +78,7 @@ diamonds %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- The hypothesis seems wrong, but we would need a graph that looks at a smaller section of the data than what this graph currently shows. With the number of data points in the graph, it's impossible to tell if a given cut is more expensive than the others. We are also lacking the context of how many carats a diamond is.
 
 The following is a set of *boxplots*; the middle bar denotes the median, the boxes denote the *quartiles* (upper and lower "quarters" of the data), and the lines and dots denote large values and outliers.
 
@@ -93,7 +93,7 @@ diamonds %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- This graph does a better job of contradicting hypothesis 2. The box plots suggest that diamonds with an "ideal" cut are the same price or even cheaper on average compared to other cut types. Again, we still don't have any data on the carat type.
 
 ## Unraveling Hypothesis 2
 
@@ -112,7 +112,8 @@ diamonds %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- This graph shows that there are more "fair" cuts with a higher carat value compared to "ideal" cuts.
+- This could suggest that diamond makers sacrifice the quality of the cut to ensure they maximize the carat value of the diamond.
 
 Note what we just did:
 
