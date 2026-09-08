@@ -73,16 +73,24 @@ c(
 
 * Run the code, don't display it, but show its results?
 
+echo=FALSE
+
 
 * Run the code, but don't display it or its results?
 
+include=FALSE
+
 
 ### __q3__ How do stop the code in a chunk from running once it has started?
+
+Click the red square in the top right corner of the chunk.
 
 
 ### __q4__ How do you show the "Document Outline" in RStudio?
 
 *Hint*: Try googling "rstudio document outline"
+
+Ctrl + Shift + O 
 
 
 <!-- include-exit-ticket -->
