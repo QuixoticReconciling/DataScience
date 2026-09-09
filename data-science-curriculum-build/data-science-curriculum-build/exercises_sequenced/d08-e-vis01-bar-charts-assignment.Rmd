@@ -63,8 +63,9 @@ Convert the following `geom_bar()` plot into the same visual using `geom_col()`.
 
 ```{r q1-task}
 mpg %>%
-  ggplot(aes(trans)) +
-  geom_bar()
+  count(trans) %>%
+  ggplot(aes(x = trans, y = n)) +
+  geom_col()
 ```
 
 ## Fundamentals of the bar chart
@@ -109,11 +110,12 @@ The following code attempts to visualize `cty, hwy` from `mpg` using `geom_col()
 ```{r q2-task}
 mpg %>%
   ggplot(aes(x = cty, y = hwy)) +
-  geom_col()
+  geom_col(position = "dodge")
 ```
 
 **Observations**:
-- Write your observations here!
+- We don't see the real highway values, but we see the sum at each city value when we used stack.
+- Dodge gives us a much better representation.
 
 ## Stacked bar charts
 
@@ -159,7 +161,7 @@ mpg %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- The addition of colors doesn't give us any additional information. but based on this data we would assume that there are far more SUVs than any other car type
 
 ```{r q4-v2}
 ## TODO: Run this code without changing, describe your observations on the data
@@ -169,12 +171,14 @@ mpg %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- This graph shows us what kind of drive car types use. Most cars drive with the forward wheels rather than the back wheels which is an observation I had not realized.
 
 **Compare `v1` and `v2`**:
 
 - Which visualization---`v1` or `v2`---enabled you to make more observations?
+    - v2 enabled me to make more observations
 - What was the difference between `v1` and `v2`?
+    - v2 used the third axes effectively. The third axes added information to the data we were getting where as v1 merely color coded the data that was already there.
 
 ### __q4__ Fix this plot
 
@@ -184,13 +188,15 @@ The following code has a bug; it does not do what its author intended. Identify 
 
 ```{r q4-task}
 mpg %>%
-  ggplot(aes(x = manufacturer, fill = class), position = "dodge") +
-  geom_bar() +
+  ggplot(aes(x = manufacturer, fill = class)) +
+  geom_bar(position = "dodge") +
   theme(axis.text.x = element_text(angle = 270, vjust = 0.5, hjust = 0))
 ```
 
 **Observations**
-- Your observations here!
+- Most car brands have a specialty where they produce one class of car more than any other.
+- There are more manufacturers that specialize in suvs than any other class.
+There are a few "all-rounders" like toyota, volkswagen, subaru, and chevrolet that make several different kinds of cars.
 
 ## A bit on facets
 
@@ -254,7 +260,7 @@ The following graph is hard to read. Experiment with other choices of faceting t
 mpg %>%
   ggplot(aes(x = cyl)) +
   geom_bar() +
-  facet_grid(~ manufacturer)
+  facet_wrap(~manufacturer)
 ```
 
 <!-- include-exit-ticket -->
