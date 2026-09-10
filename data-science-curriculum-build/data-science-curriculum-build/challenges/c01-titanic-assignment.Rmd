@@ -1,7 +1,7 @@
 ---
 title: "RMS Titanic"
-author: "(Your name here)"
-date: 2020-
+author: "Trevor"
+date: 2026-09-10
 output:
   github_document:
     toc: true
@@ -52,6 +52,7 @@ df_titanic <- as_tibble(Titanic)
 
 ```{r q1-task}
 ## TASK: Perform a `glimpse` of df_titanic
+df_titanic%>%glimpse()
 ```
 
 **Observations**:
@@ -70,9 +71,9 @@ df_titanic %>% summarize(total = sum(n))
 
 - Write your observations here
 - Are there any differences?
-  - (Your response here)
+  - Wikipedia states that there were 1,317 passengers aboard, and 2,208 total people.
 - If yes, what might account for those differences?
-  - (Your response here)
+  - Wikipedia mentioned that there was some confusion over the passenger list. There was a coal strike that had just finished a couple of days prior and that meant a lot of people had canceled their trip and delayed it to another date. There were also people traveling under aliases and that could lead to a double counting some people. Another possible difference in the datasets is that Wikipedia is being constantly updated, and this data is from 1912.
   - ...
 
 ### __q3__ Create a plot showing the count of persons who *did* survive, along with aesthetics for `Class` and `Sex`. Document your observations below.
@@ -81,11 +82,22 @@ df_titanic %>% summarize(total = sum(n))
 
 ```{r q3-task}
 ## TASK: Visualize counts against `Class` and `Sex`
+f_titanic = df_titanic %>% filter(Survived == "Yes") 
+
+f_titanic %>%
+  ggplot(aes(x = Sex, y = n, fill = Class)) +
+  geom_col() +
+  labs(y = "Survivors", 
+       title = "Survivors sorted by class and sex"
+  )
 ```
 
 **Observations**:
 
 - Write your observations here
+- More first class women than second, third, or crew women survived.
+- More crew men survived than first, second, or third class men.
+- No further conclusions can really be drawn because we don't know if there are more first class women than any other class or more crew men than any other class.
 
 # Deeper Look
 <!-- -------------------------------------------------- -->
@@ -111,26 +123,49 @@ df_prop
 ### __q4__ Replicate your visual from q3, but display `Prop` in place of `n`. Document your observations, and note any new/different observations you make in comparison with q3. Is there anything *fishy* in your plot?
 
 ```{r q4-task}
+df_prop %>%
+  filter(Survived == "Yes") %>%
+  ggplot(aes(x = Sex, y = Prop, fill = Class)) +
+  geom_col(position = "dodge") +
+  labs(y = "Survivors", 
+       title = "Survivors sorted by class and sex"
+  )
 ```
 
 **Observations**:
 
 - Write your observations here.
 - Is there anything *fishy* going on in your plot?
-  - (Your response here)
+  - According to Wikipedia, only 32% of people survived, but in the graph above, the only values below that are 3rd class men and male crew members.
+  - This suggests that 3rd class men and male crew members make up a significant portion of the people on board the titanic, or there is something very wrong with how the data is being represented here. I would expect there to be a lower survival rate than 100% for pretty much all the groups.
 
 ### __q5__ Create a plot showing the group-proportion of occupants who *did* survive, along with aesthetics for `Class`, `Sex`, *and* `Age`. Document your observations below.
 
 *Hint*: Don't forget that you can use `facet_grid` to help consider additional variables!
 
 ```{r q5-task}
+df_prop %>%
+  filter(Survived == "Yes") %>%
+  ggplot(aes(x = Sex, y = Prop, fill = Class)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~Age) +
+  labs(y = "Survivors",
+       alpha = "Age (alpha)",
+       title = "Survivors sorted by class and sex"
+  )
+
 ```
 
 **Observations**:
 
 - (Write your observations here.)
+- From this graph, children in general have a much higher survival rate than adults.
+- The crew is entirely made up of adults.
+  - Child survival rates look similar for both male and female
+
 - If you saw something *fishy* in q4 above, use your new plot to explain the fishy-ness.
-  - (Your response here)
+  - The graph in q4 much more closely represents the child survival rate. The adult portion looks a lot more like what we would expect based on the stories we've heard about the titanic and the "sea chivalry" of women and children getting off the boat first.
+  - The reason the crew rates are lower could be because there are no children in any of the crews.
 
 # Notes
 <!-- -------------------------------------------------- -->
