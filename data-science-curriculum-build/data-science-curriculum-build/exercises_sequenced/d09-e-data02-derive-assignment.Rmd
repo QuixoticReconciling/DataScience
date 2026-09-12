@@ -87,6 +87,9 @@ Using `summarize()` and a logical summary function, determine the number of rows
 *Hint*: We learned about checking for equality in `e-data01-isolate`.
 
 ```{r q2-task}
+df_q2 <- 
+  diamonds %>%
+  summarize(n_ideal = sum(cut == "Ideal"))
 df_q2
 ```
 
@@ -130,7 +133,7 @@ The function `group_by()` modifies how other dplyr verbs function. Uncomment the
 
 ```{r q3-task}
 diamonds %>%
-  ## group_by(color, clarity) %>%
+  group_by(color, clarity) %>%
   summarize(price_mean = mean(price))
 ```
 
@@ -173,13 +176,21 @@ Assign the resulting tibble to `df_q4`, and assign the appropriate values to `co
 ```{r q4-task}
 ## TODO: Compute the `cov_depth` and `cov_diff` and assign the result to df_q4
 df_q4 <-
-  diamonds
+  diamonds %>%
+  mutate('depth_computed' = 100 * 2 * z / (x + y),
+         'diff' = depth - depth_computed
+         ) %>%
+  summarize(cov_depth = sd(depth) / mean(depth),
+            cov_diff = sd(diff, na.rm = TRUE) / mean(diff, na.rm = TRUE)
+  )
 df_q4
 ```
 
 **Observations**
 
 - Comment on the relative values of `cov_depth` and `cov_diff`.
+- cov_depth, there isn't much variation compared to its scale
+- cov_diff is large, this is because the difference between depth and depth_computed is so small which causes the covariance to be super big.
 - Why is `cov_diff` so large?
 
 The following test will verify that your `df_q4` is correct:
@@ -199,6 +210,14 @@ Compute the `price_mean = mean(price)`, `price_sd = sd(price)`, and `price_cov =
 
 ```{r q5-task}
 ## TODO: Assign result to df_q5
+df_q5 <-
+  diamonds %>%
+  group_by(cut) %>%
+  summarize(
+    price_mean = mean(price),
+    price_sd = sd(price),
+    price_cov = price_sd / price_mean
+  )
 df_q5
 ```
 
@@ -222,7 +241,7 @@ print("Excellent!")
 ```
 
 **Observations**:
-- Write your observations here!
+- Ideal diamonds don't have the highest price!
 
 <!-- include-exit-ticket -->
 # Exit Ticket
