@@ -51,6 +51,8 @@ Make a histogram of `cty` fuel economy.
 ```{r q1-task}
 ## TASK: Make a histogram of
 mpg %>%
+  ggplot(aes(cty)) +
+  geom_histogram()
 # TODO: Finish this code
 ```
 
@@ -118,9 +120,9 @@ Density plots are better for showing where the data tends to be located. Frequen
 
 Using the graphs generated in the chunks `q1-vis1` and `q1-vis2` below, answer:
 
-- Which `class` has the most vehicles?
-- Which `class` has the broadest distribution of `cty` values?
-- Which graph---`vis1` or `vis2`---best helps you answer each question?
+- Which `class` has the most vehicles? SUVs
+- Which `class` has the broadest distribution of `cty` values? Two seater
+- Which graph---`vis1` or `vis2`---best helps you answer each question? graph one uses frequency polygons and are better for showing the relative size of each group so size one is better for the first question. Graph two uses a density plot and its better for showing where the data is located. This means that it's better for answering the second question.
 
 ```{r q2-vis1}
 ## NOTE: No need to modify
@@ -146,8 +148,9 @@ Modify `q1-vis2` to use a `facet_wrap()` on the `class`. "Free" the vertical axi
 
 ```{r q3-task}
 mpg %>%
-  ggplot(aes(cty, color = class)) +
-  geom_density()
+  ggplot(aes(cty)) +
+  geom_density() +
+  facet_wrap(~class, scales = "free_y")
 ```
 
 In the reading, we learned that the "most important thing" to keep in mind with `geom_histogram()` and `geom_freqpoly()` is to _explore different binwidths_. We'll explore this idea in the next question.
@@ -157,12 +160,12 @@ In the reading, we learned that the "most important thing" to keep in mind with 
 Analyze the following graph; make sure to test different binwidths. What patterns do you see? Which patterns remain as you change the binwidth?
 
 ```{r q4-task}
-## TODO: Run this chunk; play with differnet bin widths
+## TODO: Run this chunk; play with different bin widths
 diamonds %>%
   filter(carat < 1.1) %>%
 
   ggplot(aes(carat)) +
-  geom_histogram(binwidth = 0.01, boundary = 0.005) +
+  geom_histogram(binwidth = 0.005, boundary = 0.005) +
   scale_x_continuous(
     breaks = seq(0, 1, by = 0.1)
 
@@ -170,7 +173,7 @@ diamonds %>%
 ```
 
 **Observations**
-- Write your observations here!
+- There's more at the round number amounts.
 
 <!-- include-exit-ticket -->
 # Exit Ticket
