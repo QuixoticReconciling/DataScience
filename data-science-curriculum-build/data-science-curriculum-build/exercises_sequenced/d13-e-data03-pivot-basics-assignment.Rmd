@@ -55,7 +55,7 @@ cases
 
 ```{r q1-test}
 ## TODO: Modify with your multiple choice number answer
-q1_answer <- 0
+q1_answer <- 2
 
 ## NOTE: The following will test your answer
 if (((q1_answer + 56) %% 3 == 1) & (q1_answer > 0)) {
@@ -87,7 +87,7 @@ alloys
 
 ```{r q2-test}
 ## TODO: Modify with your multiple choice number answer
-q2_answer <- 0
+q2_answer <- 3
 
 ## NOTE: The following will test your answer
 if (((q2_answer + 38) %% 3 == 2) & (q2_answer > 0)) {
@@ -135,7 +135,7 @@ cases %>%
   pivot_longer(
     names_to = "Year",
     values_to = "n",
-    c(`2011`, `2012`, `2013`)
+    cols = c(`2011`, `2012`, `2013`)
 
   ) %>%
   summarize(Year = mean(Year))
@@ -205,7 +205,7 @@ alloys %>%
     names_to = c("var", "angle"),
     names_sep = "_",
     values_to = "val",
-    cols = c(-thick, -rep) # Use all columns in the pivot, *EXCEPT* these two
+    cols = starts_with("E") | starts_with("mu") # Use all columns that start with "E" or "mu"
   )
 ```
 
@@ -262,6 +262,7 @@ df_base <-
          2,      8,  "B",
          3,      7,  "C"
   )
+df_base
 ```
 
 We're going to play a game: I'm going to modify the data, and your job is to pivot it back to equal `df_base`.
@@ -292,6 +293,13 @@ Undo the modification using a single pivot. Don't worry about column order.
 df_q3_res <-
   df_q3 %>%
 ## NOTE: Add your pivot here!
+  pivot_wider(
+    names_from = id,
+    values_from = value,
+    names_prefix = "X-"
+  )
+
+df_q3_res
 
 df_q3_res
 all.equal(
@@ -323,6 +331,12 @@ Undo the modification using a single pivot. Don't worry about column order.
 df_q4_res <-
   df_q4 %>%
 ## NOTE: Add your pivot here!
+    pivot_longer(
+      names_to = "key",
+      values_to = "X-0",
+      values_drop_na = TRUE,
+      cols = -"X-1"
+    )
 
 df_q4_res
 all.equal(
@@ -354,7 +368,11 @@ Undo the modification using a single pivot. Don't worry about column order.
 df_q5_res <-
   df_q5 %>%
 ## NOTE: Add your pivot here!
-
+    pivot_longer(
+      names_to = c(".value", "key"),
+      names_sep = "_",
+      cols = everything()
+    )
 df_q5_res
 all.equal(
   df_base, 
@@ -370,6 +388,10 @@ Using a single pivot on `df_base` create your own *challenge* dataframe. You wil
 ## NOTE: No need to edit; this is setup for the exercise
 df_q6 <-
   df_base %>%
+    pivot_wider(
+      names_from = "X-0",
+      values_from = key,
+    )
 ## NOTE: Add your pivot here!
 
 df_q6
@@ -381,6 +403,13 @@ Don't forget to create a solution!
 df_q6_res <-
   df_q6 %>%
 ## NOTE: Add your pivot here!
+  pivot_longer(
+    names_to = "X-0",
+    values_to = "key",
+    values_drop_na = TRUE,
+    names_transform = list('X-0' = as.integer),
+    cols = -"X-1",
+  )
 
 df_q6_res
 all.equal(
