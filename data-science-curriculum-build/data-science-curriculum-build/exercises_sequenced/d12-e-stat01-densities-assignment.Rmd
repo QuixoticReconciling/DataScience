@@ -69,7 +69,15 @@ In `R` we access a density by prefixing its name with the letter `d`.
 ```{r q1-task}
 ## TODO: Complete this code
 df_q1 <-
-  tibble(x = seq(-5, +5, length.out = 100))
+  tibble(x = seq(-5, +5, length.out = 100)) %>%
+  mutate(d = dunif(x, min = -1, max = +1))
+  
+df_q1 %>%
+  ggplot(aes(x, d)) +
+  geom_line() +
+  labs(
+    y = "density"
+  )
 ```
 
 Use the following test to check your answer.
@@ -157,10 +165,15 @@ df_q2 <- map_dfr(
   }
 )
 ## TODO: Create the figure
+df_q2 %>%
+  ggplot(aes(Z, color = n, group = n)) +
+  geom_density()
 ```
 
 **Observations**
 - Write your observation about the densities and `n` here.
+- Higher numbers closer to 1000 are more likely to appear near Z = 0, whereas lower values can peak anywhere between -2 and 2. All values are not as present towards the far ends of either side.
+- The higher the values, the closer the density seems to being normal.
 
 ## Not Everything is Normal
 <!-- -------------------------------------------------- -->
@@ -170,7 +183,7 @@ A *very common misconception* is that drawing more samples will make *anything* 
 ### __q3__ Run the code below and inspect the resulting histogram. Increase `n_diamonds` below to increase the number of samples drawn: Do this a few times for an increasing number of samples. Answer the questions under *observations* below.
 
 ```{r q3-task}
-n_diamonds <- 10
+n_diamonds <- 1000
 
 diamonds %>%
   filter(cut == "Good") %>%
@@ -183,6 +196,8 @@ diamonds %>%
 
 - Does the histogram look like a normal for *any* value of `n_diamonds`?
 - The normal density can take any value between negative infinity and positive infinity. Does that make sense for diamond `carat` values? Why or why not?
+- The histogram does not look like a normal for any value of n_diamonds.
+- This does not make sense for diamond carat values as diamond carat values shouldn't be able to go below zero.
 
 The normal density *is* a good model for some physical phenomena, such as the set of heights among a population. However, it is not always a good model. One reason the normal density "shows up" a lot is because it is involved in *estimation*, which we'll talk more about when we later discuss the central limit theorem.
 
