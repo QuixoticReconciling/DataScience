@@ -55,7 +55,8 @@ In this first stage, you will explore the `diamonds` dataset and document your o
 ```{r q1-task}
 ## TASK: Plot `price` vs `carat` below
 ## Your code here!
-ggplot(data = diamonds, mapping = aes(y = price, x = carat), ylab="price", xlab="carat", main="Price vs. Carat") +
+diamonds %>%
+  ggplot(mapping = aes(y = price, x = carat), ylab="price", xlab="carat", main="Price vs. Carat") +
   geom_point (col = "blue") +
   geom_smooth(col = "green")
 ```
@@ -71,8 +72,9 @@ ggplot(data = diamonds, mapping = aes(y = price, x = carat), ylab="price", xlab=
 ```{r q2-task}
 ## TASK: Plot `price`, `carat`, and `cut` below
 ## Your code here!
-ggplot(diamonds) +
-  geom_point(mapping = aes(x = carat, y = cut, color = price))
+diamonds %>%
+  ggplot(mapping = aes(x = carat, y = price, color = cut)) +
+  geom_point()
 ```
 
 **Observations**:
