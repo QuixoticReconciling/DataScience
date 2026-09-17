@@ -123,6 +123,9 @@ diamonds %>%
 - At higher carat values, there are much fewer data points which make it
   harder to accurately predict trends at those values.
 
+**Re-attempt fixes** I piped diamonds instead of calling it within
+ggplot to make sure I follow the style guide and keep my syntax clean.
+
 ### **q2** Create a visualization showing variables `carat`, `price`, and `cut` simultaneously. Experiment with which variable you assign to which aesthetic (`x`, `y`, etc.) to find an effective visual.
 
 ``` r
@@ -141,6 +144,13 @@ diamonds %>%
   lower the quality will likely be.
 - This is not a conclusive observation as there are very few data points
   at higher carat values.
+
+**Re-attempt fixes** I reassigned the y-axis to be price (a qualitative
+variable) and not cut (a distinct variable) as to not accidentally hide
+any information. I also fixed some of the styling where I was calling
+the mapping in geom_point and not ggplot. This way if I wanted to graph
+something else, lets say a linear regression line on it, I would be able
+to do so.
 
 # Communication
 
