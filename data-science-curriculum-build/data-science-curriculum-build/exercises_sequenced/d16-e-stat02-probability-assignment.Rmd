@@ -78,12 +78,17 @@ Now it's your turn!
 df_z <- tibble(z = rnorm(100))
 
 ## TODO: Compute `count_total`, `count_A`, and `fr`
+df_z %>%
+  mutate(in_A = (z <= 0)) %>%
+  summarize(count_total = n(), count_A = sum(in_A), fr = mean (in_A))
 ```
 
 **Observations**:
 
 - What value of `fr` did you predict?
+  - I predicted .5
 - Did your prediction match your calculation?
+  - Not exactly. For some samples it did, but in general it wasn't exactly a frequency of .5, it was more just the mean.
 
 The following graph visualizes the set $A = {z | z <= 0}$ against a standard normal density.
 
@@ -137,7 +142,7 @@ map_dfr(
       z = rnorm(n = n_samples),
       n = n_samples
     ) %>%
-      mutate(in_A = (z <= 0)) %>%
+      mutate(in_A = (-1.96 <= z) & (z <= +1.96)) %>%
       summarize(count_total = n(), count_A = sum(in_A), fr = mean(in_A))
   }
 )
@@ -146,6 +151,7 @@ map_dfr(
 **Observations**:
 
 - What value does `fr` appear to be limiting towards?
+- 0.95
 
 Now that we know what probability is; let's connect the idea to *distributions*.
 
