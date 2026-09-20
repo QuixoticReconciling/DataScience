@@ -179,6 +179,7 @@ Note that for continuous distributions, the probability of a single point is *ze
 
 ```{r q3-task}
 ## TASK: Modify the code below
+## TASK: Modify the code below
 map_dfr(
   c(10, 100, 1000, 1e4),
   function(n_samples) {
@@ -186,7 +187,7 @@ map_dfr(
       z = rnorm(n = n_samples),
       n = n_samples
     ) %>%
-      mutate(in_A = (z <= 0)) %>%
+      mutate(in_A = (z == 2)) %>%
       summarize(count_total = n(), count_A = sum(in_A), fr = mean(in_A))
   }
 )
@@ -195,6 +196,7 @@ map_dfr(
 **Observations**:
 
 - What value is `fr` approaching?
+- 0
 
 We can also understand this phenomenon in terms of areas; the following graph visualizes the set $A = {z | z = 2}$ against a standard normal.
 
@@ -258,7 +260,7 @@ Note that, by definition, the CDF gives the probability over the set $A(x) = {x'
 
 ```{r q4-task}
 ## TASK: Compute the probability that Z <= 0, assign to p0
-p0 <- NA_real_
+p0 <- pnorm(q = 0)
 p0
 ```
 
@@ -282,7 +284,7 @@ $$\mathbb{P}_{\rho}[a <= X <= b] = \int_a^b \rho(x) dx = \int_{-\infty}^b \rho(x
 
 ```{r p5-task}
 ## TASK: Compute the probability that -1.96 <= Z <= +1.96, assign to pI
-pI <- NA_real_
+pI <- pnorm(q = +1.96) - pnorm(q = -1.96)
 pI
 ```
 
