@@ -124,6 +124,12 @@ tribble(
 df_q1 <-
   genes %>%
 ## TODO: pivot and unite here!
+  unite(col = "offspring", sep = "", remove = FALSE, parent1, parent2) %>%
+  pivot_wider(
+    names_from = parent2,
+    values_from = offspring
+
+  )
 
 df_q1
 ```
@@ -165,6 +171,20 @@ separate to tidy these data.
 df_q2 <-
   alloys_mod %>%
 ## TODO: pivot and separate here!
+  pivot_longer(
+    cols = c(-thick, - rep),
+    names_to = "var",
+    values_to = "value",
+  ) %>%
+  separate(
+    col = var,
+    into = c("identifier", "angle"),
+    sep = -2,
+  ) %>%
+  pivot_wider(
+    names_from = identifier,
+    values_from = value,
+  )
 
 df_q2
 ```
