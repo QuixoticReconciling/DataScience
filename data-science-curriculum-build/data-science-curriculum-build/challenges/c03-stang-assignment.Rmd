@@ -43,6 +43,12 @@ library(tidyverse)
 
 *Background*: In 1946, scientists at the Bureau of Standards tested a number of Aluminum plates to determine their [elasticity](https://en.wikipedia.org/wiki/Elastic_modulus) and [Poisson's ratio](https://en.wikipedia.org/wiki/Poisson%27s_ratio). These are key quantities used in the design of structural members, such as aircraft skin under [buckling loads](https://en.wikipedia.org/wiki/Buckling). These scientists tested plats of various thicknesses, and at different angles with respect to the [rolling](https://en.wikipedia.org/wiki/Rolling_(metalworking)) direction.
 
+Notes from wiki for what are the relationships between Elasticity and Poisson ratio
+- A stiffer material will have a higher Elasticity modulus
+- Poisson ratio is a measure of the expansion or contraction of a material in direction perpendicular to where the load is being applied.
+- Most materials have a poisson ratio between 0 and 0.5
+- Softer materials like rubber with have a higher poisson ratio
+
 # Loading and Wrangle
 <!-- -------------------------------------------------- -->
 
@@ -67,7 +73,16 @@ Note that these data are not tidy! The data in this form are convenient for repo
 ```{r q1-task}
 ## TASK: Tidy `df_stang`
 df_stang_long <-
-  df_stang
+  df_stang %>%
+  pivot_longer(
+    names_to = c(".value", "angle"),
+    values_to = c("E", "nu"),
+    names_sep = "_",
+    cols = c(-thick, - alloy),
+    names_transform = list(angle = as.integer)
+ ) %>%
+  # Would not expect sheets of aluminum to display a negative elasticity
+  filter(E > 0 | nu > 0)
 
 df_stang_long
 ```
@@ -102,20 +117,41 @@ print("Very good!")
 ### __q2__ Perform a basic EDA on the aluminum data *without visualization*. Use your analysis to answer the questions under *observations* below. In addition, add your own *specific* question that you'd like to answer about the data---you'll answer it below in q3.
 
 ```{r q2-task}
-##
+ang_45 <- 
+  df_stang_long %>%
+  filter(angle == 45) %>%
+  select(-alloy)
+ang_0 <- 
+  df_stang_long %>%
+  filter(angle == 0) %>%
+  select(-alloy)
+ang_90 <- 
+  df_stang_long %>%
+  filter(angle == 90) %>%
+  select(-alloy)
+thick_comp <-
+  df_stang_long %>%
+  filter(thick == .022 | thick == 0.081) %>%
+  filter(angle == 0) %>%
+  select(-alloy, -angle)
+ang_45
+ang_90
+ang_0
+thick_comp
 ```
 
 **Observations**:
 
 - Is there "one true value" for the material properties of Aluminum?
-  - (Your response here)
+  - No, there is not one true value, as for the same thickness, the elasticity and poisson ratio have different values.
 - How many aluminum alloys are in this dataset? How do you know?
-  - (Your response here)
+  - There is one aluminum alloy in the dataset: "al_24st." Since there is only one I didn't include it in my initial EDA
 - What angles were tested?
-  - (Your response here)
+  - 0, 45, 90
 - What thicknesses were tested?
-  - (Your response here)
-- (Write your own question here)
+  - 0.022, 0,032, 0.064, 0.081
+  
+- What is the relationship between Elasticity and Poisson Ratio, and how does applying force at different angles of rolling change that relationship?
 
 ## Visualize
 <!-- ------------------------- -->
@@ -124,11 +160,22 @@ print("Very good!")
 
 ```{r q3-task}
 ## TASK: Investigate your question from q1 here
+#angle %>% factor(levels = c(0, 45, 90))
+df_stang_long %>%
+  mutate(angle = as.factor(angle)) |> 
+  
+  ggplot(aes(x = E, y = nu, color = angle)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal()
 ```
 
 **Observations**:
 
-- (Address your question from q1 here)
+- From the graph we can assume that elasticity and poisson ratio have a positive correlation.
+- An angle of 90 degrees has a much more shallow increase in the poisson ratio as the elasticity goes up
+- There doesn't seem to be a linear relationship between the rolling angle and the poisson ratio, as an angle of 45 has a higher poisson ratio than 0 or 90, the two ends of the data.
+- Elasticity and poisson ratio seem to be independent of the angle.
 
 ### __q4__ Consider the following statement:
 
@@ -148,9 +195,9 @@ df_stang_long %>%
 **Observations**:
 
 - Does this graph support or contradict the claim above?
-  - (Your response here)
+  - This graph would contradict the claim that elasticity is an intensive material property as elasticity seems to be dependent on how thick a material is.
 - Is this evidence *conclusive* one way or another?
-  - (Your response here)
+  - This graph by itself is not conclusive, as there are other variables unaccounted for that elasticity could be dependent on that is being disguised as thickness in this graph. But my previous visualization showed that elasticity was not in fact dependent on the angle of the roll which was the only other variable that wasn't held constant when collecting this data. Therefore, based on the two graphs created, this evidence is conclusive.
 
 # References
 <!-- -------------------------------------------------- -->
