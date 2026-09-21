@@ -121,15 +121,18 @@ tribble(
 ### __q1__ Use a combination of `unite` and pivoting to turn `genes` into the same dataframe as `punnett`.
 
 ```{r q1-task}
+genes
+punnett
 df_q1 <-
-  genes %>%
-## TODO: pivot and unite here!
-  unite(col = "offspring", sep = "", remove = FALSE, parent1, parent2) %>%
+genes %>%
+# TODO: pivot and unite here!
+unite("result", parent2, parent1, sep = "", remove = FALSE) %>%
   pivot_wider(
-    names_from = parent2,
-    values_from = offspring
-
-  )
+    names_from = parent1,
+    values_from = result,
+    names_sort = TRUE,
+  ) %>% 
+  rename(parent1 = parent2)
 
 df_q1
 ```
