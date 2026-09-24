@@ -140,122 +140,50 @@ df_michelson %>% glimpse()
 
 ``` r
 ## TODO: Compute summaries
+df_michelson
+```
+
+    ## # A tibble: 100 × 4
+    ##    Date                Distinctness  Temp Velocity
+    ##    <dttm>              <fct>        <dbl>    <dbl>
+    ##  1 1879-06-05 00:00:00 3               76   299850
+    ##  2 1879-06-07 00:00:00 2               72   299740
+    ##  3 1879-06-07 00:00:00 2               72   299900
+    ##  4 1879-06-07 00:00:00 2               72   300070
+    ##  5 1879-06-07 00:00:00 2               72   299930
+    ##  6 1879-06-07 00:00:00 2               72   299850
+    ##  7 1879-06-09 00:00:00 3               83   299950
+    ##  8 1879-06-09 00:00:00 3               83   299980
+    ##  9 1879-06-09 00:00:00 3               83   299980
+    ## 10 1879-06-09 00:00:00 3               83   299880
+    ## # ℹ 90 more rows
+
+``` r
 df_q1 <- df_michelson
 df_q1 %>%
+  group_by(Distinctness) %>%
+  summarize(n = n(), MeanVelocity = mean(Velocity)) %>%
   arrange(desc(Distinctness)) %>%
+
 
   knitr::kable()
 ```
 
-| Date       | Distinctness | Temp | Velocity |
-|:-----------|:-------------|-----:|---------:|
-| 1879-06-05 | 3            |   76 |   299850 |
-| 1879-06-09 | 3            |   83 |   299950 |
-| 1879-06-09 | 3            |   83 |   299980 |
-| 1879-06-09 | 3            |   83 |   299980 |
-| 1879-06-09 | 3            |   83 |   299880 |
-| 1879-06-13 | 3            |   72 |   300000 |
-| 1879-06-13 | 3            |   72 |   300000 |
-| 1879-06-13 | 3            |   79 |   299960 |
-| 1879-06-13 | 3            |   79 |   299960 |
-| 1879-06-13 | 3            |   79 |   299940 |
-| 1879-06-13 | 3            |   79 |   299960 |
-| 1879-06-13 | 3            |   79 |   299940 |
-| 1879-06-13 | 3            |   79 |   299880 |
-| 1879-06-13 | 3            |   79 |   299800 |
-| 1879-06-17 | 3            |   77 |   299800 |
-| 1879-06-17 | 3            |   77 |   299880 |
-| 1879-06-17 | 3            |   77 |   299880 |
-| 1879-06-17 | 3            |   77 |   299880 |
-| 1879-06-17 | 3            |   77 |   299860 |
-| 1879-06-20 | 3            |   60 |   299880 |
-| 1879-06-20 | 3            |   61 |   299910 |
-| 1879-06-21 | 3            |   80 |   299770 |
-| 1879-06-21 | 3            |   81 |   299760 |
-| 1879-06-21 | 3            |   82 |   299740 |
-| 1879-06-21 | 3            |   82 |   299750 |
-| 1879-06-21 | 3            |   81 |   299760 |
-| 1879-06-23 | 3            |   89 |   299910 |
-| 1879-06-23 | 3            |   89 |   299920 |
-| 1879-06-23 | 3            |   90 |   299890 |
-| 1879-06-23 | 3            |   90 |   299860 |
-| 1879-06-23 | 3            |   90 |   299880 |
-| 1879-06-24 | 3            |   72 |   299720 |
-| 1879-06-24 | 3            |   73 |   299840 |
-| 1879-06-24 | 3            |   74 |   299850 |
-| 1879-06-24 | 3            |   75 |   299850 |
-| 1879-06-24 | 3            |   76 |   299780 |
-| 1879-06-27 | 3            |   73 |   299780 |
-| 1879-06-27 | 3            |   74 |   299810 |
-| 1879-06-27 | 3            |   75 |   299760 |
-| 1879-06-27 | 3            |   75 |   299810 |
-| 1879-06-27 | 3            |   76 |   299790 |
-| 1879-06-27 | 3            |   76 |   299810 |
-| 1879-07-02 | 3            |   86 |   299950 |
-| 1879-07-02 | 3            |   86 |   299800 |
-| 1879-07-02 | 3            |   86 |   299810 |
-| 1879-07-02 | 3            |   85 |   299870 |
-| 1879-06-07 | 2            |   72 |   299740 |
-| 1879-06-07 | 2            |   72 |   299900 |
-| 1879-06-07 | 2            |   72 |   300070 |
-| 1879-06-07 | 2            |   72 |   299930 |
-| 1879-06-07 | 2            |   72 |   299850 |
-| 1879-06-09 | 2            |   83 |   300000 |
-| 1879-06-10 | 2            |   90 |   299980 |
-| 1879-06-10 | 2            |   90 |   299930 |
-| 1879-06-12 | 2            |   71 |   299650 |
-| 1879-06-12 | 2            |   71 |   299760 |
-| 1879-06-13 | 2            |   72 |   299960 |
-| 1879-06-17 | 2            |   62 |   299800 |
-| 1879-06-17 | 2            |   63 |   299790 |
-| 1879-06-18 | 2            |   75 |   299860 |
-| 1879-06-18 | 2            |   75 |   299970 |
-| 1879-06-18 | 2            |   75 |   299950 |
-| 1879-06-20 | 2            |   62 |   299850 |
-| 1879-06-20 | 2            |   63 |   299870 |
-| 1879-06-20 | 2            |   78 |   299840 |
-| 1879-06-20 | 2            |   79 |   299840 |
-| 1879-06-20 | 2            |   80 |   299850 |
-| 1879-06-20 | 2            |   79 |   299840 |
-| 1879-06-20 | 2            |   79 |   299840 |
-| 1879-06-20 | 2            |   79 |   299840 |
-| 1879-06-21 | 2            |   61 |   299890 |
-| 1879-06-21 | 2            |   62 |   299810 |
-| 1879-06-21 | 2            |   63 |   299810 |
-| 1879-06-21 | 2            |   64 |   299820 |
-| 1879-06-21 | 2            |   65 |   299800 |
-| 1879-06-26 | 2            |   86 |   299890 |
-| 1879-06-26 | 2            |   86 |   299840 |
-| 1879-06-30 | 2            |   85 |   299820 |
-| 1879-06-30 | 2            |   86 |   299850 |
-| 1879-06-30 | 2            |   86 |   299870 |
-| 1879-06-30 | 2            |   86 |   299870 |
-| 1879-07-01 | 2            |   83 |   299810 |
-| 1879-07-01 | 2            |   84 |   299740 |
-| 1879-07-01 | 2            |   86 |   299810 |
-| 1879-07-01 | 2            |   86 |   299940 |
-| 1879-06-12 | 1            |   71 |   299810 |
-| 1879-06-14 | 1            |   64 |   299850 |
-| 1879-06-14 | 1            |   64 |   299880 |
-| 1879-06-14 | 1            |   65 |   299900 |
-| 1879-06-14 | 1            |   66 |   299840 |
-| 1879-06-14 | 1            |   67 |   299830 |
-| 1879-06-14 | 1            |   84 |   299790 |
-| 1879-06-14 | 1            |   85 |   299810 |
-| 1879-06-14 | 1            |   84 |   299880 |
-| 1879-06-14 | 1            |   84 |   299880 |
-| 1879-06-14 | 1            |   84 |   299830 |
-| 1879-06-17 | 1            |   64 |   299760 |
-| 1879-06-18 | 1            |   58 |   299720 |
-| 1879-06-18 | 1            |   58 |   299720 |
-| 1879-06-18 | 1            |   59 |   299620 |
+| Distinctness |   n | MeanVelocity |
+|:-------------|----:|-------------:|
+| 3            |  46 |     299861.7 |
+| 2            |  39 |     299858.5 |
+| 1            |  15 |     299808.0 |
 
-**Observations**: - Write your observations here! - The distinctness
-doesn’t seem to have any coorelation with the velocity - Why might your
-table differ from Michelson’s? - The table might differ from Michelson’s
-as my table is grouped by distinctness whereas Michelson’s table uses a
-different ordering structure. - The data isn’t inherently different, I
-was still able to find the same data points in both tables.
+**Observations**: - Write your observations here! - Distinctness 2 and 3
+have a faster velocity than distinctness 1. - Why might your table
+differ from Michelson’s? - A possible explanation for the difference in
+Michelson’s table could be a choice to round the values for his report.
+
+**Fixes** - Previously I misunderstood the question and had merely
+arranged my data by distinctness. This time I used summarize to
+summarize the groups michelson reported and grouped them by
+distinctness.
 
 The `Velocity` values in the dataset are the speed of light *in air*;
 Michelson introduced a couple of adjustments to estimate the speed of
@@ -321,12 +249,23 @@ LIGHTSPEED_VACUUM - LIGHTSPEED_MICHELSON
 
     ## [1] -151.542
 
+``` r
+LIGHTSPEED_PM
+```
+
+    ## [1] 51
+
 **Observations**: - Is Michelson’s estimate of the error (his
 uncertainty) greater or less than the true error? - Michelson’s estimate
 of the error is greater than the true error. - Make a quantitative
 comparison between Michelson’s uncertainty and his error. - Michelson’s
-uncertainty was 92, and his error was 151.542. His error was more than
-his uncertainty
+uncertainty was 51, and his error was 151.542. (151.542 - 51 = 100.542)
+Michelson’s uncertainty was over 100 km/s off his actual error.
+
+**Fixes** - Found the uncertainty using LIGHTSPEED_PM, not the “92”
+value I was using previously - Made a proper quantitative comparison
+between Michelson’s uncertainty and his error. Previously I had made a
+qualitative claim that his error was more than his uncertainty.
 
 The following plot shows all of Michelson’s data as a [control
 chart](https://en.wikipedia.org/wiki/Control_chart); this sort of plot
@@ -408,10 +347,14 @@ df_q2 %>%
 ![](c02-michelson-assignment_files/figure-gfm/q4-cf-real-simulated-1.png)<!-- -->
 
 **Observations**: Similarities - Both have means that hover around the
-the speed of light in a vacuum - The outliers for both plots are similar
-distances away Differences - There are more days where the mean velocity
-falls outside of the uncertainty in the real data compared to the
-simulation data
+299950, greater than the speed of light in a vacuum. - The outliers for
+both plots are similar distances away Differences - There are more days
+where the mean velocity falls outside of the uncertainty in the real
+data compared to the simulation data
+
+**Fixes** - I had incorrectly identified that the means hovered around
+the speed of light in a vacuum, when actually the means hover well above
+that.
 
 ### **q5** You have access to a few other variables. Construct a **at least three** visualizations of `VelocityVacuum` against these other factors. Are there other patterns in the data that might help explain the difference between Michelson’s estimate and `LIGHTSPEED_VACUUM`?
 
@@ -474,10 +417,13 @@ df_q2 %>%
   velocity by day line.
 - The bar chart attempts to see if distinctness played a role in the
   accuracy of the test findings. Distinctness is grouped into three
-  categories, but seemingly the light particles that were less distinct
-  had a lower average than those that were more distinct.
+  categories, but seemingly the apparent light beams that were less
+  distinct had a lower average than those that were more distinct.
 - This suggest that the distinctness of the light sample in the test was
   not indicative of how accurate it was.
+
+**Fixes** - Michelson wasn’t observing light particles, he was observing
+the light beams reflecting from the mirror.
 
 ## Bibliography
 

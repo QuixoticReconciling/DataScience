@@ -50,6 +50,7 @@ One way to overcome overplotting is to randomly "jitter" the points: add a small
 mpg %>% 
   ggplot(mapping = aes(x = displ, y = hwy)) +
   geom_jitter()
+  #geom_point()
 ```
 
 Now that we've jittered the data, we can see little "clusters" of points where we'd previously seen a single point. Unfortunately, jittering introduces some "lies" into our visual: We have to be careful not to interpret the jittering as true variability in the data.
@@ -67,8 +68,8 @@ Modify the code below to adjust the jittering to be 0 in the horizontal directio
 mpg %>% 
   ggplot(mapping = aes(x = displ, y = hwy)) +
   geom_jitter(
-    # width = 0.2,
-    # height = 0.2,
+    width = 0,
+    height = 0.2,
   )
 ```
 
@@ -118,6 +119,7 @@ mpg %>%
   ggplot(mapping = aes(
     x = displ,
     y = hwy,
+    color = class
   )) +
   geom_jitter(width = 0.1, height = 0.5)
 ```
@@ -152,7 +154,8 @@ Similarly the aesthetic function `aes()` assumes the first two arguments will be
 
 ```{r exposition-3}
 ## NOTE: No need to modify! Just example code
-ggplot(mpg, aes(displ, hwy)) +
+mpg%>%
+ggplot(aes(displ, hwy)) +
   geom_point()
 ```
 
@@ -162,7 +165,8 @@ Above `geom_point()` inherits the `mapping` from the base `ggplot` call; however
 ## NOTE: No need to modify! Just example code
 ggplot(mpg, aes(x = displ)) +
   geom_point(aes(y = hwy, color = "hwy")) +
-  geom_point(aes(y = cty, color = "cty"))
+  geom_point(aes(y = cty, color = "cty")) +
+  labs(y = "mpg")
 ```
 
 Later, we'll learn more concise ways to construct graphs like the one above. But for now, we'll practice using layers to add more information to scatterplots.
@@ -187,7 +191,11 @@ df_annotate <-
 
 mpg %>%
   ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = class))
+  geom_point(aes(color = class)) + 
+  geom_label_repel(
+    data = df_annotate,
+    aes(label = class)
+  )
 ```
 
 ### __q4__ Interpret a scatterplot
@@ -209,7 +217,9 @@ mpg %>%
 
 **Observations**:
 - Which tends to be larger? `cty` or `hwy` mileage?
+- Highway mileage
 - What is the trend of mileage with `displ`?
+- The trend is a negative correlation. The higher the engine displacement, the lower the gas mileage.
 
 ## Aside: Scatterplot vs bar chart
 <!-- -------------------------------------------------- -->
