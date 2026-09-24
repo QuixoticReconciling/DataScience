@@ -115,7 +115,12 @@ df_titanic%>%glimpse()
 
 **Observations**:
 
-- (List all variables here)
+- The dataset tracks all the people in the data set. There is class,
+  sex, age, and whether or not they survived. For each grouping of
+  people there is a variable n that shows how many of that group there
+  are.
+
+**Fixes** - Forgot to answer question in first attempt.
 
 ### **q2** Skim the [Wikipedia article](https://en.wikipedia.org/wiki/RMS_Titanic) on the RMS Titanic, and look for a total count of souls aboard. Compare against the total computed below. Are there any differences? Are those differences large or small? What might account for those differences?
 
@@ -140,11 +145,18 @@ df_titanic %>% summarize(total = sum(n))
   - Wikipedia mentioned that there was some confusion over the passenger
     list. There was a coal strike that had just finished a couple of
     days prior and that meant a lot of people had canceled their trip
-    and delayed it to another date. There were also people traveling
-    under aliases and that could lead to a double counting some people.
-    Another possible difference in the datasets is that Wikipedia is
-    being constantly updated, and this data is from 1912.
-  - …
+    and delayed it to another date, meaning there could’ve been a couple
+    of last minute additions to the trip that wouldn’t have been added
+    to this data set that was released in 1912. Because wikipedia is
+    constantly being updated, we’d expect it to be more accurate than
+    the dataset from 1912.
+
+**Fixes** - I had made the claim to explain the differences in the
+dataset that “There were also people traveling under aliases and that
+could lead to a double counting some people.” However, if this was the
+case, we’d expect the wikipedia page to report a lower number of total
+people compared to this dataset which is not the case. I have changed my
+reasoning for why there is a difference in the datasets. - …
 
 ### **q3** Create a plot showing the count of persons who *did* survive, along with aesthetics for `Class` and `Sex`. Document your observations below.
 
@@ -255,7 +267,7 @@ df_prop %>%
   filter(Survived == "Yes") %>%
   ggplot(aes(x = Sex, y = Prop, fill = Class)) +
   geom_col(position = "dodge") +
-  facet_wrap(~Age) +
+  facet_grid(~Age) +
   labs(y = "Survivors",
        alpha = "Age (alpha)",
        title = "Survivors sorted by class and sex"
@@ -282,9 +294,16 @@ df_prop %>%
   - The graph in q4 much more closely represents the child survival
     rate. The adult portion looks a lot more like what we would expect
     based on the stories we’ve heard about the titanic and the “sea
-    chivalry” of women and children getting off the boat first.
+    chivalry” of women and children getting off the boat first. The
+    issue in the fishiness was that the child data was overwriting the
+    adult data in the q4. By separating the groups by age we avoid that.
   - The reason the crew rates are lower could be because there are no
     children in any of the crews.
+
+  **Fixes**
+  - Directly answered why the previous graph was fishy.
+  - Used facet_grid as it is the best practice to use as opposed to
+    facet_wrap
 
 # Notes
 
