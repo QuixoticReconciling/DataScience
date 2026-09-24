@@ -258,8 +258,8 @@ set.seed(101)
 v_test_iqr <- rnorm(n = 10)
 
 ## TASK: Compute the interquartile range
-test_iqr <- v_test_iqr %>%
-  quantile(., probs = c(0, 0.25, 0.50, 0.75, 1.00), na.rm = TRUE)
+test_iqr <-
+  quantile(v_test_iqr, 0.75) - quantile(v_test_iqr, 0.25)
 test_iqr
 ```
 
@@ -302,13 +302,32 @@ tibble(
 
 ```{r q4-task}
 ## TODO: Use code from q2 to compute the sd and IQR, rank as before
+flights %>%
+  group_by(carrier) %>%
+  summarize(
+    sd_delay = sd(dep_delay, na.rm = TRUE),
+    IQR_delay = IQR(dep_delay, na.rm = TRUE)
+  ) %>%
+  arrange(desc(sd_delay)) %>%
+  head(5)
+flights %>%
+  group_by(carrier) %>%
+  summarize(
+    sd_delay = sd(dep_delay, na.rm = TRUE),
+    IQR_delay = IQR(dep_delay, na.rm = TRUE)
+  ) %>%
+  arrange(desc(IQR_delay)) %>%
+  head(5)
 ```
 
 **Observations**:
 
 - Which carriers are at the top of both `sd` and `IQR` departure delay?
+  - EV, YV, FL, F9
 - Which carriers differ in the two lists?
+  - 9E, HA
 - Which carrier has the biggest difference between its `sd` and `IQR`? What might this mean?
+  - HA has a really big difference between its standard deviation and IQR. This could be because HA has some really large delay values that are far away from the mean.
 
 ## Dependence
 <!-- ------------------------- -->
