@@ -318,6 +318,11 @@ flights %>%
   ) %>%
   arrange(desc(IQR_delay)) %>%
   head(5)
+
+flights %>%
+  filter(carrier %in% c("HA", "F9", "FL", "YV", "EV")) %>%
+  ggplot(aes(carrier, dep_delay)) +
+  geom_boxplot()
 ```
 
 **Observations**:
@@ -376,7 +381,7 @@ In the case of a *perfect linear relationships* the Pearson correlation takes th
 slope <- 0.5 # Play with this value; observe the correlation
 df_line <-
   tibble(x = seq(-1, +1, length.out = 50)) %>%
-  mutate(y = slope * x)
+  mutate(y = slope * x * -.5)
 
 ## TASK: Compute the Pearson correlation
 df_line %>%
@@ -390,7 +395,9 @@ df_line %>%
 **Observations**:
 
 - For what values of `slope` is the correlation positive?
+  - The correlation is positive when the slope is positive.
 - For what values of `slope` is the correlation negative?
+  - The correlation is negative when the slope is negative.
 
 Note that this means *correlation is a measure of dependence*; it is **not** a measure of slope! It is better thought of as how *strong* the relationship between two variables is. A closer-to-zero correlation indicates a noisy relationship between variables, while a closer-to-one (in absolute value) indicates a more perfect, predictable relationship between the variables. For instance, the following code simulates data with different correlations, and facets the data based on the underlying correlation.
 
@@ -458,12 +465,20 @@ df_quad <-
 df_quad %>%
   ggplot(aes(x, y)) +
   geom_point()
+
+df_quad %>%
+  summarize(rho = cor(x,y, method = "pearson"))
+
+df_quad %>%
+  summarize(rho = cor(x,y, method = "spearman"))
 ```
 
 **Observations**:
 
 - What do you predict the correlations to be?
+  - I predicted a 0 for pearson correlation and to be 1 for spearman correlation
 - What are the actual correlations?
+  - Both correlations are actually near 0
 
 One last point about correlation: The mean is to Pearson correlation as the median is to Spearman correlation. The median and Spearman's rho are robust to outliers.
 
