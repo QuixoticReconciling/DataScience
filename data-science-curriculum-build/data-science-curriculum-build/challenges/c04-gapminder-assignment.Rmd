@@ -1,7 +1,7 @@
 ---
 title: "Gapminder"
-author: "(Your name here)"
-date: 2020-
+author: "Trevor McDonald"
+date: 2026-09-28
 output:
   github_document:
     toc: true
@@ -57,11 +57,12 @@ dataset?
 
 ```{r q0-task}
 ## TASK: Do your "first checks" here!
+gapminder%>%glimpse()
 ```
 
 **Observations**:
 
-- Write all variable names here
+- We have country, continent, year, life expectancy, population, and gdp per captia.
 
 ### __q1__ Determine the most and least recent years in the `gapminder` dataset.
 
@@ -69,8 +70,10 @@ dataset?
 
 ```{r q1-task}
 ## TASK: Find the largest and smallest values of `year` in `gapminder`
-year_max <- NA_real_
-year_min <- NA_real_
+year_max <- gapminder %>% pull(year) %>% max()
+year_min <- gapminder %>% pull(year) %>% min()
+year_max
+year_min
 ```
 
 Use the following test to check your work.
@@ -95,27 +98,58 @@ print("Nice!")
 You may encounter difficulties in visualizing these data; if so document your challenges and attempt to produce the most informative visual you can.
 
 ```{r q2-task}
+library(ggrepel)
 ## TASK: Create a visual of gdpPercap vs continent
+gapminder %>%
+  filter(year == year_min,
+    gdpPercap > 100000) %>%
+  ggplot(aes(pop, gdpPercap, color = country)) +
+  geom_point() +
+  geom_label_repel(
+    aes(label = country, fill = country)
+  )
+gapminder %>%
+  filter(
+    year == year_min,
+    gdpPercap < 100000
+    ) %>%
+  ggplot(aes(continent, gdpPercap)) +
+  geom_boxplot()
+  
 ```
 
 **Observations**:
 
-- Write your observations here
+- Oceania displays the highest average GDP per capita, but it also has very few data points to draw from.
+- Europe has the second highest average GDP per capita but it also has the most variation.
+- Each continent besides oceania has a few outliers that are higher than the average, but none that are lower than the average.
 
 **Difficulties & Approaches**:
 
-- Write your challenges and your approach to solving them
+- One thing I noticed was that there was a very high outlier value that made it very hard to find observations otherwise. To solve, this, I isolated that data point to see which country it was. It turned out to be Kuwait, and when I looked up Kuwaits gdp percapita was in 1952, I found that it wasn't even tracked until 1962. This means I could filter it out from my graph.
+- I chose a boxplot because boxplots give me a lot more information to look at rather than just raw points. Seeing each quartile allowed me to make more observations about trends and which values are truly outliers.
 
 ### __q3__ You should have found *at least* three outliers in q2 (but possibly many more!). Identify those outliers (figure out which countries they are).
 
 ```{r q3-task}
+library(ggrepel)
 ## TASK: Identify the outliers from q2
+outlier_africa <- gapminder %>% filter(continent == "Africa", gdpPercap > 3000, year == year_min)
+outlier_americas <- gapminder %>% filter(continent == "Americas", gdpPercap > 7500, year == year_min)
+outlier_asia <- gapminder %>% filter(continent == "Asia", gdpPercap > 5000 & gdpPercap < 100000, year == year_min)
+outlier_europe <- gapminder %>% filter(continent == "Europe", gdpPercap > 12500, year == year_min)
+combined <- rbind(outlier_africa, outlier_americas, outlier_asia, outlier_europe)
+combined
 ```
 
 **Observations**:
 
 - Identify the outlier countries from q2
-  - (Your response here)
+  - I found th outliers for each continent shown in the box plots.
+  Africa: Angola, Gabon, South Africa
+  Americas: Canada, United States, Venezuela
+  Asia: Bahrain, Saudi Arabia
+  Europe: Switzerland
 
 *Hint*: For the next task, it's helpful to know a ggplot trick we'll learn in an upcoming exercise: You can use the `data` argument inside any `geom_*` to modify the data that will be plotted *by that geom only*. For instance, you can use this trick to filter a set of points to label:
 
@@ -139,6 +173,33 @@ gapminder %>%
 
 ```{r q4-task}
 ## TASK: Create a visual of gdpPercap vs continent
+gapminder %>%
+  filter(
+    year == year_max | year == year_min,
+    gdpPercap < 100000) %>%
+  ggplot(aes(continent, gdpPercap)) +
+  # geom_boxplot(
+  #   data = . %>% filter(year ==year_min, gdpPercap < 100000),
+  #   fill = "cornsilk",
+  #   position = "dodge"
+  # ) +
+  # geom_boxplot(
+  #   data = . %>% filter(year == year_max),
+  #   fill = "bisque",
+  #   position = "dodge"
+  # ) +
+  geom_boxplot(
+    aes(fill = year, group = str_c(year, continent)),
+    position = "dodge"
+  ) + 
+  geom_point(
+    data = . %>% filter(
+      country %in% c("Angola", "Gabon", "South Africa", "Canada", "United States", "Venezuela", "Bahrain", "Saudi Arabia", "Switzerland"),
+      ),
+    mapping = aes(color = country),
+    size = 2
+  ) +
+  gg
 ```
 
 **Observations**:
