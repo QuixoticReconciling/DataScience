@@ -80,7 +80,7 @@ The following graph doesn't work as its author intended. Based on what we learne
 ## TODO: Fix the following code
 gapminder %>%
   filter(continent == "Asia") %>%
-  ggplot(aes(year, lifeExp)) +
+  ggplot(aes(year, lifeExp, color = country)) +
   geom_line()
 ```
 
@@ -97,7 +97,9 @@ mpg %>%
 
 **Observations**:
 - What does a line plot assume about the data?
+  - A line plot assumes that we are tracking one object across a certain behavior. A function relationship if you will.
 - How does the `mpg` dataset violate this assumption?
+  - The mpg dataset tracks all different kinds of cars. The dataset does not have the same kind of functional relationship as multiple cars have the same displ value but a different hwy value.
 
 ## Smoothing data
 
@@ -153,7 +155,9 @@ economics %>%
 
 **Observations**:
 - What can you tell based on the `Raw` data?
+  - The raw data fluctuates a lot and has a lot of spikes.
 - What can you tell based on the `Smoothed` data?
+  - The smoothed data takes all those spikes and well, smooths it out. This allows us to see a more long term trend compared to the quick reactionary ones of raw data.
 
 <!-- include-exit-ticket -->
 # Exit Ticket
