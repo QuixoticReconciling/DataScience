@@ -177,19 +177,9 @@ gapminder %>%
   filter(
     year == year_max | year == year_min,
     gdpPercap < 100000) %>%
-  ggplot(aes(continent, gdpPercap)) +
-  # geom_boxplot(
-  #   data = . %>% filter(year ==year_min, gdpPercap < 100000),
-  #   fill = "cornsilk",
-  #   position = "dodge"
-  # ) +
-  # geom_boxplot(
-  #   data = . %>% filter(year == year_max),
-  #   fill = "bisque",
-  #   position = "dodge"
-  # ) +
+  ggplot(aes(continent, gdpPercap, group = str_c(year, continent))) +
   geom_boxplot(
-    aes(fill = year, group = str_c(year, continent)),
+    aes(fill = year),
     position = "dodge"
   ) + 
   geom_point(
@@ -197,14 +187,20 @@ gapminder %>%
       country %in% c("Angola", "Gabon", "South Africa", "Canada", "United States", "Venezuela", "Bahrain", "Saudi Arabia", "Switzerland"),
       ),
     mapping = aes(color = country),
-    size = 2
-  ) +
-  gg
+    size = 2,
+    position = position_dodge(width = 0.75)
+  )
+
 ```
 
 **Observations**:
 
-- Write your observations here
+- All continents had an average increase in gdp per capita for the 25th, 50th, and 75th quartiles
+- Oceania's box is a lot larger. I looked it up on google and this is because countries like New Zealand or pacific islands didn't start tracking their gdp per capita until after 1952.
+- In Africa there are now more outliers, but the bottom 50% today is the closest to the bottom 50% in 1952 for Africa than all other continents.
+- Venezuela is no longer an outlier in the Americas. Canada and U.S. sit well above any other country in the Americas
+- Asia has a relatively small 25 - 50 quartile compared to its 50 -75 quartile. 
+- Asia seems to exhibit the largest range followed by Europe.
 
 # Your Own EDA
 <!-- -------------------------------------------------- -->
@@ -215,20 +211,87 @@ Now it's your turn! We just went through guided EDA considering the GDP per capi
 
 ```{r q5-task1}
 ## TASK: Your first graph
+gapminder %>% 
+  filter(
+    year == year_max) %>%
+  ggplot(aes(gdpPercap, lifeExp)) +
+  geom_point(aes(size = pop, color = continent), alpha = 0.7) +
+  geom_smooth(se = FALSE)
 ```
 
-- (Your notes and observations here)
+- This graph isn't trying to answer any question in-particular, it's to try and see general trends and see if any of them are interesting.
+- My initial thought was to see if population had anything to do with the gdp per capita, but looking at this graph, there's nothing particularly interesting to me about population that sticks out.
+- Visually, Africa exhibits a much lower gdp per capita and life expectancy than other continents
+- Life expectancy seems to have a logarithmic relationship to gdp per capita.
+- There seems to be a sharp increase in life expectancy with increasing gdp per capita, but that seems to diminish around 10,000 gdp per capita.
 
 ```{r q5-task2}
 ## TASK: Your second graph
+quartiles <- gapminder %>%
+  group_by(year) %>%
+  summarize(
+    bottom = quantile(lifeExp, 0),
+    quart1 = quantile(lifeExp, .25),
+    quart2 = quantile(lifeExp, .5),
+    quart3 = quantile(lifeExp, .75),
+    top = quantile(lifeExp, 1)
+  ) %>%
+  pivot_longer(
+    names_to = "quartile",
+    values_to = "lifeExp",
+    cols = -year
+  )
+quartiles
+gapminder %>% 
+  ggplot(aes(year, lifeExp)) +
+  geom_boxplot(aes(group = year)) +
+  geom_point(aes(color = continent)) +
+  geom_line(data = quartiles, aes(linetype = quartile), color = "blue", size = 1)
+
+gapminder %>%
+  filter(lifeExp < 25)
+  
 ```
 
-- (Your notes and observations here)
+- This graph tries to see if there is a difference in the life expectancy growth between different quartiles.
+- The outlier in 1992 is Rwanda. At face value this can be explained by their civil war ranging from 1990-1993, but according to a quick google search the number of people it killed before 1992 was in the thousands, maybe tens of thousands. However, Rwanda's population at that time was north of 7 million. This suggests that this could be inaccurate data, and a google search supports that fact.
+- There doesn't seem to be a major disparity in growth, except both the 0% line and the 25% line plateau after the 90s. There doesn't seem to be an easy answer to support why that is.
+- The median has experienced the most growth out of all the quartiles. Life expectancy has gone up from ~45 to ~72.
+- African countries are overly represented in the bottom 2 quartiles.
 
 ```{r q5-task3}
 ## TASK: Your third graph
+lower <- gapminder %>%
+  filter(continent == "Africa") %>%
+  group_by(year) %>%
+  summarize(
+    country  = country[which.min(lifeExp)],
+    lifeExp  = min(lifeExp),
+  )
+higher <- gapminder %>%
+  filter(continent == "Africa") %>%
+  group_by(year) %>%
+  summarize(
+    country = country[which.max(lifeExp)],
+    lifeExp = max(lifeExp)
+  )
+higher
+lower
+library(ggrepel)
+gapminder %>%
+  filter(continent == "Africa",
+         lifeExp > 25) %>%
+  ggplot(aes(lifeExp, year)) +
+  geom_boxplot(aes(group = year)) +
+  geom_point(data = lower, color = "red") +
+  geom_point(data = higher, color = "blue") +
+  geom_text_repel(data = higher, aes(label = country), size = 3) +
+  geom_text_repel(data = lower, aes(label = country), size = 3)
 ```
 
-- (Your notes and observations here)
+- Since Africa being grouped together in the bottom 50% of our data for our other two graphs, I wanted to take a little bit of a closer look.
+- The two countries that appear at the top of life expectancy for Africa are Reunion and Mauritius which are both tiny islands off the coast of Madagascar. Both of these populations are around 1 million, and they seem to be more of a vacation spot than anything else.
+- The countries on the lower end are gambia, Sierra Leone, Angola, Rwanda, Zambia, and Swaziland (Eswatini). I wanted to see if there was some geographical trend between the lowest life expectancy but I didn't see any.
+- Another cause I hypothesized was the decolonization period that led to a lot of civil wars could explain the difference, but all of these countries had civil wars around the same time (1960s-1970s), so that wouldn't explain why the plateau has continued to today.
 
 
