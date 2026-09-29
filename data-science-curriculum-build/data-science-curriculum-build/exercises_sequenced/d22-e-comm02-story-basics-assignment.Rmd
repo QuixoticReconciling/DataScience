@@ -146,9 +146,12 @@ diamonds %>%
 
 **Classify**:
 AAA, ABT, or DHY?
+This is ABT
 
 **Justify**
 Write your justification here!
+There's an interesting finding here. Not everything performs as expected because the price of a fair diamond is more expensive than an ideal diamond at lower carat values. There's a level of conflict introduced.
+
 
 ### __q2__ Identify the point on the narrative spectrum, and justify your answer.
 
@@ -171,9 +174,11 @@ diamonds %>%
 
 **Classify**:
 AAA, ABT, or DHY?
+This is AAA
 
 **Justify**
 Write your justification here!
+There is no narrative conflict introduced. Ideal diamonds are more expensive, and price rises as carat value goes up.
 
 ### __q3__ Identify the point on the narrative spectrum, and justify your answer.
 
@@ -194,9 +199,10 @@ diamonds %>%
 
 **Classify**:
 AAA, ABT, or DHY?
+Classified as AAA
 
 **Justify**
-Write your justification here!
+There's just too much data to know what to pull from.
 
 ### __q4__ Turn in all your answers via google forms. [Link](https://forms.gle/kHuT5oufUQA7jRWG8)
 
