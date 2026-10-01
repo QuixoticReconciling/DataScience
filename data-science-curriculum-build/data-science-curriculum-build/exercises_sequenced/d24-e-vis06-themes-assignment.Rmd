@@ -25,7 +25,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r q1-task}
 mpg %>%
   ggplot(aes(displ, hwy, color = class)) +
-  geom_point()
+  geom_point() +
+  guides(color = "none") +
+  theme_void()
 ```
 
 
@@ -68,6 +70,7 @@ The `%+replace` magic above allows you to use `theme_common()` within your own g
 ```{r q2-task}
 mpg %>%
   ggplot(aes(displ, hwy, color = class)) +
+  theme_common() +
   geom_point() +
   labs(
     x = "Engine Displacement (L)",
@@ -78,6 +81,9 @@ mpg %>%
 **Observations**:
 
 - What changed about the graph when you added `theme_common()`?
+- The text is now bigger,
+- The background is white,
+- Everything is more squished.
 
 Calling `theme_common()`, along with settings `labs()` and making some smart choices about geoms and annotations is often all you need to make a *really high-quality graph*.
 
@@ -88,9 +94,16 @@ Calling `theme_common()`, along with settings `labs()` and making some smart cho
 ```{r q3-task}
 mpg %>%
   ggplot(aes(displ, hwy, color = class)) +
-  geom_point() +
+  geom_point(size = 8) +
   theme(
-    axis.text.x = element_text(size = 32)
+    axis.text.x = element_text(size = 32, angle = 180),
+    axis.text.y = element_text(size = 5, angle = 229),
+    axis.title.y = element_text(size = 111, angle = 18),
+    panel.grid.major = element_line(color = "dodgerblue"),
+    panel.grid.major.x = element_blank(),
+    axis.line = element_line(linewidth = 12, color = "beige"),
+    panel.background = element_rect(fill = "red"),
+    panel.border = element_rect(linetype = "dashed", linewidth = 3, color = "navy")
   )
 ```
 
