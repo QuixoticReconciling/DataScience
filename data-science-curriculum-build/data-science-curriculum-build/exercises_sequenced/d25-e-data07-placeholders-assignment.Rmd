@@ -29,7 +29,7 @@ library(tidyverse)
 
 ```{r q1-task}
 ## NOTE: Re-write this code to use the placeholder
-diamonds %>% glimpse()
+diamonds %>% glimpse(.)
 ```
 
 ### __q2__ Fix the lambda expression
@@ -41,6 +41,8 @@ The reading discussed *Using lambda expressions with `%>%`*; use this part of th
 ##       why it fails and fix it.
 # 2 %>%
 #   . * .
+# This fails because without braces there is no first argument rule.
+2 %>% {.*.}
 
 ```
 
@@ -57,9 +59,8 @@ diamonds %>%
   geom_point() +
   geom_point(
     ## TODO: Re-write this section
-    data = diamonds %>%
+    data = . %>%
       filter(
-        carat <= 0.3,
         cut == "Fair"
       ),
     color = "red"
