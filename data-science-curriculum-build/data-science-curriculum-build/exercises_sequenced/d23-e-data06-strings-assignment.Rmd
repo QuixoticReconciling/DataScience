@@ -79,7 +79,8 @@ mpg %>%
 ```{r q1-task}
 ## TODO: Filter down to trans that are manual
 df_q1 <-
-  mpg
+  mpg %>%
+  filter(str_detect(trans, "manual"))
 df_q1 %>% glimpse()
 ```
 
@@ -114,7 +115,10 @@ Recall (from the reading) that `\d` is a regular expression referring to a singl
 ```{r q2-task}
 ## TODO: Filter down to trans that are manual
 df_q2 <-
-  mpg
+  mpg %>%
+  filter(
+    str_detect(trans, "\\manual")
+  )
 df_q2 %>% glimpse()
 ```
 
@@ -192,7 +196,14 @@ Notice that the `trans` column of `mpg` has many entries of the form `auto|manua
 ```{r q3-task}
 ## TASK: Mutate `trans` to extract
 df_q3 <-
-  mpg
+  mpg %>%
+  select(trans) %>%
+    mutate(
+      tmp = str_extract(
+        string = trans,
+        pattern = "[[:alpha:]]\\d"
+      )
+    )
 df_q3 %>%
   select(tmp)
 ```
@@ -243,7 +254,7 @@ points <- c(
 q4 <-
   str_match(
     points,
-    pattern = ".*"
+    pattern = "(\\d+).*(\\d)"
   )
 
 q4
@@ -287,7 +298,11 @@ string_quantiles %>%
 ```{r q5-task}
 ## TODO: Mutate trans to remove the parentheses and all characters inside
 df_q5 <-
-  mpg
+  mpg %>%
+  select(trans) %>%
+  mutate(
+    trans = str_remove(trans, "\\(.*\\)")
+  )
 df_q5
 ```
 
@@ -331,7 +346,14 @@ As described in the RegexOne tutorial, you can use *capture groups* in parenthes
 
 ```{r q6-task}
 ## TASK: Tidy `alloys`
-df_q6 <- alloys
+df_q6 <- alloys %>%
+  pivot_longer(
+    names_to = c("property", "angle"),
+    names_pattern = "([[:alpha:]]+)(\\d+)",
+    values_to = "value",
+    cols = matches("\\d")
+  ) %>%
+  mutate(angle = as.integer(angle))
 df_q6
 ```
 
