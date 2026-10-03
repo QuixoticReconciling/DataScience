@@ -43,6 +43,9 @@ mpg %>%
 **Observations**:
 
 - What are some issues with this graph?
+- This graph uses length, as its main showcase feature. This is an issue because it's hard to tell the difference in the spread of the various car companies.
+- It's hard to see if there's a general trend in this graph because the data is grouped in such a way that it's not showing any information.
+- They're organized alphabetically which is almost never useful, including this case.
 
 ### __q2__ What are some issues with the following graph? *Don't just say* "it's bad"---use concepts from the required reading.
 
@@ -57,6 +60,7 @@ as_tibble(mtcars) %>%
 ```
 
 - What are some issues with this graph?
+- It's hard to tell the difference in between some points. For example, I have no idea whether the Datsun 710 has a better mpg or the Merc 230. Size is low on the visual heiarchy.
 
 ### __q3__ What are some issues with the following graph? *Don't just say* "it's bad"---use concepts from the required reading.
 
@@ -68,6 +72,7 @@ diamonds %>%
 ```
 
 - What are some issues with this graph?
+- stacking data is never a good idea. It relies on length to tell the difference between some data. For example, it's really hard to tell the difference in the number of premium cut diamonds for the groups SI1 and VS2. Position along a common axis would be much better.
 
 ### __q4__ What are some issues with the following graph? *Don't just say* "it's bad"---use concepts from the required reading.
 
@@ -81,6 +86,7 @@ diamonds %>%
 ```
 
 - What are some issues with this graph?
+- It's a pie chart... But it relies on angle which is low on our visual heiarchy.
 
 <!-- include-exit-ticket -->
 # Exit Ticket
