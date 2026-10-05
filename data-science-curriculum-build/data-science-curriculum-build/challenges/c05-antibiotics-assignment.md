@@ -187,13 +187,30 @@ df_longer <- df_antibiotics %>%
     values_to = "value",
     cols = c(penicillin, streptomycin, neomycin)
   )
-df_longer %>%
-  ggplot(aes(value, bacteria, color = class, size = gram)) +
-  scale_x_log10() +
-  geom_point()
+df_longer
 ```
 
-    ## Warning: Using size for a discrete variable is not advised.
+    ## # A tibble: 48 × 4
+    ##    bacteria              gram     class          value
+    ##    <chr>                 <chr>    <chr>          <dbl>
+    ##  1 Aerobacter aerogenes  negative penicillin   870    
+    ##  2 Aerobacter aerogenes  negative streptomycin   1    
+    ##  3 Aerobacter aerogenes  negative neomycin       1.6  
+    ##  4 Brucella abortus      negative penicillin     1    
+    ##  5 Brucella abortus      negative streptomycin   2    
+    ##  6 Brucella abortus      negative neomycin       0.02 
+    ##  7 Bacillus anthracis    positive penicillin     0.001
+    ##  8 Bacillus anthracis    positive streptomycin   0.01 
+    ##  9 Bacillus anthracis    positive neomycin       0.007
+    ## 10 Diplococcus pneumonia positive penicillin     0.005
+    ## # ℹ 38 more rows
+
+``` r
+df_longer %>%
+  ggplot(aes(value, bacteria, color = class, shape = gram)) +
+  scale_x_log10() +
+  geom_point(size = 3)
+```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.1-1.png)<!-- -->
 

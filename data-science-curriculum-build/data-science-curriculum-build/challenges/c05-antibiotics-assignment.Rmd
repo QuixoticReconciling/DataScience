@@ -83,10 +83,11 @@ df_longer <- df_antibiotics %>%
     values_to = "value",
     cols = c(penicillin, streptomycin, neomycin)
   )
+df_longer
 df_longer %>%
-  ggplot(aes(value, bacteria, color = class, size = gram)) +
+  ggplot(aes(value, bacteria, color = class, shape = gram)) +
   scale_x_log10() +
-  geom_point()
+  geom_point(size = 3)
 ```
 
 #### Visual 2 (All variables)
@@ -157,6 +158,9 @@ df_longer %>%
     axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1)
   )
 ```
+
+
+
 
 ### __q2__ Assess your visuals
 
