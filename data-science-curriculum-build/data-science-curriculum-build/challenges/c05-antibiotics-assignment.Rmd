@@ -1,7 +1,7 @@
 ---
 title: "Antibiotics"
-author: "(Your name here)"
-date: 2020-
+author: "Trevor McDonald"
+date: 2026-10-02
 output:
   github_document
 ---
@@ -55,6 +55,7 @@ filename <- "./data/antibiotics.csv"
 ## Load the data
 df_antibiotics <- read_csv(filename)
 df_antibiotics %>% knitr::kable()
+df_antibiotics
 ```
 
 # Visualization
@@ -76,6 +77,16 @@ In this visual you must show *all three* effectiveness values for *all 16 bacter
 
 ```{r q1.1}
 # WRITE YOUR CODE HERE
+df_longer <- df_antibiotics %>%
+  pivot_longer(
+    names_to = "class",
+    values_to = "value",
+    cols = c(penicillin, streptomycin, neomycin)
+  )
+df_longer %>%
+  ggplot(aes(value, bacteria, color = class, size = gram)) +
+  scale_x_log10() +
+  geom_point()
 ```
 
 #### Visual 2 (All variables)
@@ -86,6 +97,18 @@ Note that your visual must be *qualitatively different* from *all* of your other
 
 ```{r q1.2}
 # WRITE YOUR CODE HERE
+df_longer %>%
+  ggplot(aes(gram, value)) +
+  geom_violin() +
+  geom_point(aes(color = bacteria)) +
+  scale_y_log10() +
+  facet_grid(cols = vars(class)) +
+  geom_label_repel(
+    data = .%>%
+      group_by(class) %>%
+      filter(value == min(value) | value == max(value)) %>%
+      ungroup(),
+    aes(label = bacteria), size = 2.5)
 ```
 
 #### Visual 3 (Some variables)
@@ -96,6 +119,10 @@ Note that your visual must be *qualitatively different* from *all* of your other
 
 ```{r q1.3}
 # WRITE YOUR CODE HERE
+df_longer %>%
+  ggplot(aes(value, bacteria, fill = class)) +
+  scale_x_log10() +
+  geom_col() 
 ```
 
 #### Visual 4 (Some variables)
@@ -106,6 +133,11 @@ Note that your visual must be *qualitatively different* from *all* of your other
 
 ```{r q1.4}
 # WRITE YOUR CODE HERE
+df_longer %>%
+  filter(class == "penicillin") %>%
+  ggplot(aes(value, bacteria, color = gram)) +
+  geom_point() +
+  scale_x_log10()
 ```
 
 #### Visual 5 (Some variables)
@@ -116,6 +148,14 @@ Note that your visual must be *qualitatively different* from *all* of your other
 
 ```{r q1.5}
 # WRITE YOUR CODE HERE
+df_longer %>%
+  ggplot(aes(bacteria, value, color = class, group = class)) +
+  geom_line() +
+  geom_point() +
+  scale_y_log10() +
+  theme(
+    axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1)
+  )
 ```
 
 ### __q2__ Assess your visuals
@@ -132,11 +172,12 @@ There are **two questions** below; use your five visuals to help answer both Gui
 
 *Observations*
 - What is your response to the question above?
-  - (Write your response here)
+  - For streptomycin and neomycin, the gram stain doesn't seem to matter that much. Neomycin is especially effective against Staphyococcus aureus and Stapylococcus albus and least effective against Streptococcus viridans. Streptomycin is most effective against bacillus antracis and least effective against Streptococcus hemolyticus. Penicillin is the only antibiotic with a noticable difference between the different gram stains and it is more effective against positive gram stains.  It is less effective against negative gram stains, and is least effective against Aerobacter aerogenes.
 - Which of your visuals above (1 through 5) is **most effective** at helping to answer this question?
-  - (Write your response here)
+  - Visual 2.
 - Why?
-  - (Write your response here)
+  - The second visual is most effective at answering the questions as the box plots show the general trend of effectiveness for the gram strains. 
+  - To show the effectiveness against various bacteria, the graph uses a few labels to show the amount of antibiotic needed for some key bacteria genera.
 
 #### Guiding Question 2
 
@@ -146,11 +187,12 @@ In 1974 *Diplococcus pneumoniae* was renamed *Streptococcus pneumoniae*, and in 
 
 *Observations*
 - What is your response to the question above?
-  - (Write your response here)
+  - The MIC values for Streptococcus pneumoniae closely match up with those of the Streptococcus family for all three antibiotics. This would suggest that it displays similar qualities to the rest of the bacteria in that family.
 - Which of your visuals above (1 through 5) is **most effective** at helping to answer this question?
-  - (Write your response here)
+  - visual 3.
 - Why?
-  - (Write your response here)
+  - Suprisingly the stacked bar chart works really well here. By looking at the amount of each antibiotic needed for an MIC, you can see that what was Diplococcus pneumoniae closely matches up with both Streptococcus hemolyticus and Streptococcus viridans for all three of the values. 
+  - Interestingly however, Streptococcus fecalis has a much different MIC compared to the rest of the Streptococcus family. Having different reactions to the antibiotics compared to the rest of its family could explain why it was renamed Enterococcus fecalis.
 
 
 # References
