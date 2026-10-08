@@ -1,7 +1,7 @@
 ---
 title: "Aluminum Data"
-author: "(Your name here)"
-date: 2020-
+author: "Trevor"
+date: 2026-10-08
 output:
   github_document:
     toc: true
@@ -117,28 +117,30 @@ print("Very good!")
 ### __q2__ Perform a basic EDA on the aluminum data *without visualization*. Use your analysis to answer the questions under *observations* below. In addition, add your own *specific* question that you'd like to answer about the data---you'll answer it below in q3.
 
 ```{r q2-task}
-ang_45 <- 
-  df_stang_long %>%
-  filter(angle == 45) %>%
-  select(-alloy)
-ang_0 <- 
-  df_stang_long %>%
-  filter(angle == 0) %>%
-  select(-alloy)
-ang_90 <- 
-  df_stang_long %>%
-  filter(angle == 90) %>%
-  select(-alloy)
-thick_comp <-
-  df_stang_long %>%
-  filter(thick == .022 | thick == 0.081) %>%
-  filter(angle == 0) %>%
-  select(-alloy, -angle)
-ang_45
-ang_90
-ang_0
-thick_comp
+df_stang_long
+df_stang_long%>%glimpse()
+
+df_stang_long %>%
+  pull(angle) %>%
+  unique()
+
+df_stang_long %>%
+  pull(thick) %>%
+  unique()
+
+df_stang_long %>%
+  pull(alloy) %>%
+  unique()
+
+df_stang_long %>%
+  pull(E) %>%
+  unique()
+
+df_stang_long %>%
+  pull(nu) %>%
+  unique()
 ```
+
 
 **Observations**:
 
@@ -152,6 +154,8 @@ thick_comp
   - 0.022, 0,032, 0.064, 0.081
   
 - What is the relationship between Elasticity and Poisson Ratio, and how does applying force at different angles of rolling change that relationship?
+
+**Fixes** - I hadn't really done EDA previously. I spent more time analyzing the dataset and asking specific questions and filtering data. I restructured the data I was pulling to be more of an overview of the data. I looked at the dataset by both looking at the table and using glimpse. I then pulled all of the unique values for all the columns.
 
 ## Visualize
 <!-- ------------------------- -->
@@ -197,7 +201,9 @@ df_stang_long %>%
 - Does this graph support or contradict the claim above?
   - This graph would contradict the claim that elasticity is an intensive material property as elasticity seems to be dependent on how thick a material is.
 - Is this evidence *conclusive* one way or another?
-  - This graph by itself is not conclusive, as there are other variables unaccounted for that elasticity could be dependent on that is being disguised as thickness in this graph. But my previous visualization showed that elasticity was not in fact dependent on the angle of the roll which was the only other variable that wasn't held constant when collecting this data. Therefore, based on the two graphs created, this evidence is conclusive.
+  - One thing to note is that it's the 0.081 thickness that seems to create values out of the norm. The three other thicknesses are clustered randomly together. This means this graph doesn't show a general trend, and seems to suggest there might be more of an issue with how the 0.081 thickness was tested. The paper even says that the test used a different type of strain gauge than the 3 other thicknesses. Because of that I would say this evidence is far from conclusive.
+  
+**Fixes** - I had fallen into the trap of making a jerk reaction off of a couple of graphs. I looked over the graph more carefully and noticed that the graph doesn't display a trend, but more of an outlier where the 0.081 thicknesses had a different elasticity than the rest of the thicknesses. I also looked at the methods in the original paper and noticed that a different method was used to test the 0.081 thicknesses. Armed with more knowledge, I can confidently say that the evidence is NOT conclusive. In the future I'll be better at thinking a little more before making an immediate reaction to a graph :)
 
 # References
 <!-- -------------------------------------------------- -->
