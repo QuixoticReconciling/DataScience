@@ -158,8 +158,84 @@ df_longer %>%
     axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1)
   )
 ```
+```{r qme}
+mic_wide <- df_longer %>%
+  mutate(log_value = log10(value)) %>%
+  select(bacteria, class, log_value) %>%
+  pivot_wider(names_from = class, values_from = log_value) %>%
+  column_to_rownames("bacteria")
 
+mic_wide
+```
+```{r remake}
+df_longer %>%
+  filter(str_detect(bacteria, "Strept|Diplo")) %>%
+  ggplot(aes(bacteria, value, color = class, group = class)) +
+  geom_line() +
+  geom_point(size = 3) +
+  theme(axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1)) +
+  labs(y = "MIC (µg/mL)",
+       x = "Bacteria Species")
 
+df_longer %>%
+  filter(str_detect(bacteria, "Strept|Diplo")) %>%
+  ggplot(aes(bacteria, value, fill = class)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1)) +
+    labs(y = "MIC (µg/mL)",
+       x = "Bacteria Species")
+```
+
+```{r newdata}
+df_new <- data.frame(
+  Streptococcus_Bacteria = c("constellatus", "agalactiae", "anginosus", "uberis", "dysgalactiae"),
+  Amoxicillin_016 = c(1/53, 9/388, 4/164, 3/294, 124/234),
+  Benzylpenicillin_016 = c(4/53, 188/3235, 51/294, 38/293, 16/234),
+  Amoxicillin_125 = c(17/53, 19/388, 60/164, 17/294, 0/234),
+  Benzylpenicillin_125 = c(14/53, 81/3235, 20/294, 15/293, 0/234)
+)
+df_new %>%
+  pivot_longer(
+    names_to = "mic_type",
+    values_to = "values",
+    cols = (-Streptococcus_Bacteria)
+  ) %>%
+  group_by(mic_type) %>%
+  ggplot(aes(Streptococcus_Bacteria, values, fill = mic_type, group = mic_type)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1)) +
+      labs(y = "MIC (µg/mL)",
+       x = "Bacteria Species")
+
+```
+```{r trick}
+df_trick <- data.frame(
+  Streptococcus_Bacteria = c("constellatus", "agalactiae", "anginosus", "uberis", "dysgalactiae", "kingae"),
+  Amoxicillin_0.16 = c(1/53, 9/388, 4/164, 3/294, 124/234, 2/202),
+  Benzylpenicillin_016 = c(4/53, 188/3235, 51/294, 38/293, 16/234, 71/202),
+  Amoxicillin_125 = c(17/53, 19/388, 60/164, 17/294, 0/234, 65/202),
+  Benzylpenicillin_125 = c(14/53, 81/3235, 20/294, 15/293, 0/234, 15/202)
+)
+df_edit <- df_trick %>%
+  pivot_longer(
+    cols = -Streptococcus_Bacteria,
+    names_to = "mic_type",
+    values_to = "values"
+  ) %>%
+  mutate(Streptococcus_Bacteria = fct_relevel(Streptococcus_Bacteria, "kingae"))
+
+df_edit %>%
+  ggplot(aes(Streptococcus_Bacteria, values, fill = mic_type)) +
+  geom_col(position = "dodge") +
+  geom_vline(xintercept = 1.5, linetype = "dashed", color = "grey40") +
+  labs(
+    x = "Bacteria Species",
+    y = "Observations at MIC concentration / total observations",
+    fill = expression("MIC concentration (" * mu * "g/mL)")
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1))
+```
 
 
 ### __q2__ Assess your visuals
