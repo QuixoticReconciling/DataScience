@@ -1,7 +1,7 @@
 Aluminum Data
 ================
-(Your name here)
-2020-
+Trevor
+2026-10-08
 
 - [Grading Rubric](#grading-rubric)
   - [Individual](#individual)
@@ -235,84 +235,76 @@ print("Very good!")
 ### **q2** Perform a basic EDA on the aluminum data *without visualization*. Use your analysis to answer the questions under *observations* below. In addition, add your own *specific* question that you’d like to answer about the data—you’ll answer it below in q3.
 
 ``` r
-ang_45 <- 
-  df_stang_long %>%
-  filter(angle == 45) %>%
-  select(-alloy)
-ang_0 <- 
-  df_stang_long %>%
-  filter(angle == 0) %>%
-  select(-alloy)
-ang_90 <- 
-  df_stang_long %>%
-  filter(angle == 90) %>%
-  select(-alloy)
-thick_comp <-
-  df_stang_long %>%
-  filter(thick == .022 | thick == 0.081) %>%
-  filter(angle == 0) %>%
-  select(-alloy, -angle)
-ang_45
+df_stang_long
 ```
 
-    ## # A tibble: 8 × 4
-    ##   thick angle     E    nu
-    ##   <dbl> <int> <dbl> <dbl>
-    ## 1 0.022    45 10700 0.329
-    ## 2 0.022    45 10500 0.331
-    ## 3 0.032    45 10400 0.318
-    ## 4 0.032    45 10500 0.326
-    ## 5 0.064    45 10400 0.331
-    ## 6 0.064    45 10500 0.328
-    ## 7 0.081    45 10000 0.32 
-    ## 8 0.081    45  9900 0.312
+    ## # A tibble: 26 × 5
+    ##    thick alloy   angle     E    nu
+    ##    <dbl> <chr>   <int> <dbl> <dbl>
+    ##  1 0.022 al_24st     0 10600 0.321
+    ##  2 0.022 al_24st    45 10700 0.329
+    ##  3 0.022 al_24st    90 10500 0.31 
+    ##  4 0.022 al_24st     0 10600 0.323
+    ##  5 0.022 al_24st    45 10500 0.331
+    ##  6 0.022 al_24st    90 10700 0.323
+    ##  7 0.032 al_24st     0 10400 0.329
+    ##  8 0.032 al_24st    45 10400 0.318
+    ##  9 0.032 al_24st    90 10300 0.322
+    ## 10 0.032 al_24st     0 10300 0.319
+    ## # ℹ 16 more rows
 
 ``` r
-ang_90
+df_stang_long%>%glimpse()
 ```
 
-    ## # A tibble: 9 × 4
-    ##   thick angle     E    nu
-    ##   <dbl> <int> <dbl> <dbl>
-    ## 1 0.022    90 10500 0.31 
-    ## 2 0.022    90 10700 0.323
-    ## 3 0.032    90 10300 0.322
-    ## 4 0.032    90 10400 0.33 
-    ## 5 0.064    90 10400 0.327
-    ## 6 0.064    90 10500 0.32 
-    ## 7 0.081    90  9900 0.314
-    ## 8 0.081    90 10000 0.316
-    ## 9 0.081    90  9900 0.314
+    ## Rows: 26
+    ## Columns: 5
+    ## $ thick <dbl> 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.032, 0.032, 0.032, 0…
+    ## $ alloy <chr> "al_24st", "al_24st", "al_24st", "al_24st", "al_24st", "al_24st"…
+    ## $ angle <int> 0, 45, 90, 0, 45, 90, 0, 45, 90, 0, 45, 90, 0, 45, 90, 0, 45, 90…
+    ## $ E     <dbl> 10600, 10700, 10500, 10600, 10500, 10700, 10400, 10400, 10300, 1…
+    ## $ nu    <dbl> 0.321, 0.329, 0.310, 0.323, 0.331, 0.323, 0.329, 0.318, 0.322, 0…
 
 ``` r
-ang_0
+df_stang_long %>%
+  pull(angle) %>%
+  unique()
 ```
 
-    ## # A tibble: 9 × 4
-    ##   thick angle     E    nu
-    ##   <dbl> <int> <dbl> <dbl>
-    ## 1 0.022     0 10600 0.321
-    ## 2 0.022     0 10600 0.323
-    ## 3 0.032     0 10400 0.329
-    ## 4 0.032     0 10300 0.319
-    ## 5 0.064     0 10500 0.323
-    ## 6 0.064     0 10700 0.328
-    ## 7 0.081     0 10000 0.315
-    ## 8 0.081     0 10100 0.312
-    ## 9 0.081     0 10000 0.311
+    ## [1]  0 45 90
 
 ``` r
-thick_comp
+df_stang_long %>%
+  pull(thick) %>%
+  unique()
 ```
 
-    ## # A tibble: 5 × 3
-    ##   thick     E    nu
-    ##   <dbl> <dbl> <dbl>
-    ## 1 0.022 10600 0.321
-    ## 2 0.022 10600 0.323
-    ## 3 0.081 10000 0.315
-    ## 4 0.081 10100 0.312
-    ## 5 0.081 10000 0.311
+    ## [1] 0.022 0.032 0.064 0.081
+
+``` r
+df_stang_long %>%
+  pull(alloy) %>%
+  unique()
+```
+
+    ## [1] "al_24st"
+
+``` r
+df_stang_long %>%
+  pull(E) %>%
+  unique()
+```
+
+    ## [1] 10600 10700 10500 10400 10300 10000  9900 10100
+
+``` r
+df_stang_long %>%
+  pull(nu) %>%
+  unique()
+```
+
+    ##  [1] 0.321 0.329 0.310 0.323 0.331 0.318 0.322 0.319 0.326 0.330 0.327 0.328
+    ## [13] 0.320 0.315 0.314 0.312 0.316 0.311
 
 **Observations**:
 
@@ -329,6 +321,12 @@ thick_comp
 - What is the relationship between Elasticity and Poisson Ratio, and how
   does applying force at different angles of rolling change that
   relationship?
+
+**Fixes** - I hadn’t really done EDA previously. I spent more time
+analyzing the dataset and asking specific questions and filtering data.
+I restructured the data I was pulling to be more of an overview of the
+data. I looked at the dataset by both looking at the table and using
+glimpse. I then pulled all of the unique values for all the columns.
 
 ## Visualize
 
@@ -392,13 +390,24 @@ df_stang_long %>%
     intensive material property as elasticity seems to be dependent on
     how thick a material is.
 - Is this evidence *conclusive* one way or another?
-  - This graph by itself is not conclusive, as there are other variables
-    unaccounted for that elasticity could be dependent on that is being
-    disguised as thickness in this graph. But my previous visualization
-    showed that elasticity was not in fact dependent on the angle of the
-    roll which was the only other variable that wasn’t held constant
-    when collecting this data. Therefore, based on the two graphs
-    created, this evidence is conclusive.
+  - One thing to note is that it’s the 0.081 thickness that seems to
+    create values out of the norm. The three other thicknesses are
+    clustered randomly together. This means this graph doesn’t show a
+    general trend, and seems to suggest there might be more of an issue
+    with how the 0.081 thickness was tested. The paper even says that
+    the test used a different type of strain gauge than the 3 other
+    thicknesses. Because of that I would say this evidence is far from
+    conclusive.
+
+**Fixes** - I had fallen into the trap of making a jerk reaction off of
+a couple of graphs. I looked over the graph more carefully and noticed
+that the graph doesn’t display a trend, but more of an outlier where the
+0.081 thicknesses had a different elasticity than the rest of the
+thicknesses. I also looked at the methods in the original paper and
+noticed that a different method was used to test the 0.081 thicknesses.
+Armed with more knowledge, I can confidently say that the evidence is
+NOT conclusive. In the future I’ll be better at thinking a little more
+before making an immediate reaction to a graph :)
 
 # References
 
