@@ -36,6 +36,8 @@ These are particularly useful for computing things like differences:
 ## NOTE: No need to edit this; just an example
 x <- seq(-1, +1, length.out = 6)
 f <- x ^ 2
+x
+f
 
 ## Forward finite difference
 df_dx <- (lead(f) - f) / (lead(x) - x)
