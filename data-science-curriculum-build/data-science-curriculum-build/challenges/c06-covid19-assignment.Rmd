@@ -1,7 +1,7 @@
 ---
 title: "COVID-19"
-author: "(Your name here)"
-date: 2020-
+author: "Trevor McDonald"
+date: 2026-10-12
 output:
   github_document:
     toc: true
@@ -79,7 +79,17 @@ That's the high-level view; now let's dig into the details.
 
 ```{r q1-task}
 ## TASK: Load the census bureau data with the following tibble name.
-df_pop <- NA
+df_pop <- read_csv(
+  "data/ACSDT5Y2018.B01003-Data.csv",
+  skip = 2,
+  col_names = c("id", "Geographic Area Name", "Estimate!!Total", "Margin of Error!!Total"),
+  col_types = cols(
+    id = col_character(),
+    'Geographic Area Name' = col_character(),
+    'Estimate!!Total' = col_double(),
+    'Margin of Error!!Total' = col_double(),
+  ),
+  )
 ```
 
 *Note*: You can find information on 1-year, 3-year, and 5-year estimates [here](https://www.census.gov/programs-surveys/acs/guidance/estimates.html). The punchline is that 5-year estimates are more reliable but less current.
@@ -95,7 +105,7 @@ The New York Times is publishing up-to-date data on COVID-19 on [GitHub](https:/
 
 ```{r q2-task}
 ## TASK: Find the URL for the NYT covid-19 county-level data
-url_counties <- NA_character_
+url_counties <- "https://github.com/nytimes/covid-19-data/raw/refs/heads/master/us-counties.csv"
 ```
 
 Once you have the url, the following code will download a local copy of the data, then load the data into R.
@@ -136,7 +146,10 @@ To join these datasets, we'll need to use [FIPS county codes](https://en.wikiped
 
 ```{r q3-task}
 ## TASK: Create a `fips` column by extracting the county code
-df_q3 <- NA
+df_q3 <- df_pop %>%
+  mutate(
+    fips = str_remove(id, "0500000US")
+  )
 ```
 
 Use the following test to check your answer.
@@ -156,7 +169,11 @@ print("Very good!")
 
 ```{r q4-task}
 ## TASK: Join df_covid and df_q3 by fips.
-df_q4 <- NA
+df_q4 <- left_join(
+  df_covid,
+  df_q3,
+  by = "fips"
+)
 ```
 
 Use the following test to check your answer.
@@ -220,7 +237,11 @@ Now that we've done the hard work of loading and wrangling the data, we can fina
 ```{r q5-task}
 ## TASK: Normalize cases and deaths
 df_normalized <-
-  df_data
+  df_data %>%
+  mutate(
+    cases_per100k = cases/population * 100000,
+    deaths_per100k = deaths/population * 100000
+  )
 ```
 
 You may use the following test to check your work.
@@ -289,12 +310,24 @@ Compute the mean and standard deviation for `cases_per100k` and `deaths_per100k`
 
 ```{r q6-task}
 ## TASK: Compute mean and sd for cases_per100k and deaths_per100k
+df_selected <- df_normalized %>%
+  filter(date == max(date))
+
+df_selected
+
+df_selected %>%
+  summarize(
+    cases_mean = mean(cases_per100k, na.rm = TRUE),
+    cases_sd = sd(cases_per100k, na.rm = TRUE),
+    deaths_mean = mean(deaths_per100k, na.rm = TRUE),
+    deaths_sd = mean(deaths_per100k, na.rm = TRUE)
+  )
 ```
 
 - Which rows did you pick?
-  - (Your response here)
+  - I picked only the rows with the max date in the dataset.
 - Why?
-  - (Your response here)
+  - The mean of the first couple of days will be much lower than the mean of the last days. By only taking the values from the last day of this dataset, we are finding the total number of people who have gotten covid from the first day this dataset was recorded until the last.
 
 ### __q7__ Find and compare the top 10
 
@@ -302,8 +335,22 @@ Find the top 10 counties in terms of `cases_per100k`, and the top 10 in terms of
 
 ```{r q7-task}
 ## TASK: Find the top 10 max cases_per100k counties; report populations as well
+df_selected %>%
+  mutate(
+    cases_rank = min_rank(cases_per100k)
+  ) %>%
+  filter(
+    cases_rank <= 10
+  )
 
 ## TASK: Find the top 10 deaths_per100k counties; report populations as well
+df_selected %>%
+  mutate(
+    deaths_rank = min_rank(deaths_per100k)
+  ) %>%
+  filter(
+    deaths_rank <= 10
+  )
 ```
 
 **Observations**:
