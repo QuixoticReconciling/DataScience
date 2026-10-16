@@ -37,7 +37,7 @@ Make sure to commit both the challenge report (`report.md` file) and supporting 
 
 ```{r setup}
 library(tidyverse)
-
+library(ggforce)
 ```
 
 *Background*: [COVID-19](https://en.wikipedia.org/wiki/Coronavirus_disease_2019) is the disease caused by the virus SARS-CoV-2. In 2020 it became a global pandemic, leading to huge loss of life and tremendous disruption to society. The New York Times (as of writing) publishes up-to-date data on the progression of the pandemic across the United States---we will study these data in this challenge.
@@ -337,27 +337,38 @@ Find the top 10 counties in terms of `cases_per100k`, and the top 10 in terms of
 ## TASK: Find the top 10 max cases_per100k counties; report populations as well
 df_selected %>%
   mutate(
-    cases_rank = min_rank(cases_per100k)
+    cases_rank = min_rank(desc(cases_per100k))
   ) %>%
   filter(
     cases_rank <= 10
-  )
+  ) %>%
+  select(
+    county, state, cases, deaths, population, cases_per100k, cases_rank
+  ) %>%
+  arrange(cases_rank)
 
 ## TASK: Find the top 10 deaths_per100k counties; report populations as well
 df_selected %>%
   mutate(
-    deaths_rank = min_rank(deaths_per100k)
-  ) %>%
+    deaths_rank = min_rank(desc(deaths_per100k)
+  )) %>%
   filter(
     deaths_rank <= 10
-  )
+  ) %>%
+  select(
+    county, state, cases, deaths, population, deaths_per100k, deaths_rank
+  ) %>%
+  arrange(deaths_rank)
 ```
 
 **Observations**:
 
-- (Note your observations here!)
+- The populations suggest that these are not highly populous areas.
+- Loving, Texas is the only county on both charts.
+- Loving, Texas is the only county that has more cases than its population. This is likely not because of error, but because of people who got covid more than once.
+- Deaths/100k values are much lower when compared to cases/100k values.
 - When did these "largest values" occur?
-  - (Your response here)
+  - These "large values" occur when populations are low. The largest population on the top 10 charts for either deaths or cases is 18,040 people. This is likely due to the nature of Covid where it is highly contagious and spreads through small populations very quickly.
 
 ## Self-directed EDA
 <!-- ------------------------- -->
@@ -375,7 +386,108 @@ df_selected %>%
 - Your own idea!
 
 **DO YOUR OWN ANALYSIS HERE**
+```{r}
+df_normalized %>%
+  filter(!is.na(cases)) %>%
+  arrange(state, county, date) %>%
+  group_by(state, county) %>%
+  mutate(
+    new_cases = cases - lag(cases)
+    ) %>%
+  ungroup() %>%
+  group_by(date) %>%
+  summarize(new_cases = sum(new_cases, na.rm = TRUE)) %>%
+  ggplot(aes(date, new_cases)) +
+  geom_line() +
+  labs(
+    y = "New Cases Per Day",
+    title = "Daily COVID-19 Cases"
+  )
+```
+**Observations**
+- The first thing I wanted to do was just plot the data to see if there was anything that interested me.
+- From the graph of new cases, there seems to be three main spikes. Notably, the first one isn't until late 2020, early 2021.
+- This seemed weird to me as I remember how huge of a deal the pandemic was in March of 2020. That felt like the worst of the pandemic but looking at this graph, you wouldn't think that.
+- My next step that I wanted to take was to look at the start of the pandemic to see if there was anything that happened at the start of the pandemic that made everyone really scared and put the entire world on hold.
+```{r}
+df_state_daily <- df_normalized %>%
+  filter(!is.na(cases)) %>%
+  group_by(state, date) %>%
+  summarize(cases = sum(cases), .groups = "drop_last") %>%
+  group_by(state) %>%
+  mutate(days_since_first = as.numeric(date - min(date))) %>%
+  ungroup()
+df_state_daily
 
+state_pages <- df_state_daily %>%
+  filter(cases <= 10000) %>%
+  ggplot(aes(days_since_first, cases)) +
+  geom_line()
+state_pages + facet_wrap_paginate(~ state, nrow = 2, ncol = 5, page = 1)
+state_pages + facet_wrap_paginate(~ state, nrow = 2, ncol = 5, page = 2)
+state_pages + facet_wrap_paginate(~ state, nrow = 2, ncol = 5, page = 3)
+state_pages + facet_wrap_paginate(~ state, nrow = 2, ncol = 5, page = 4)
+state_pages + facet_wrap_paginate(~ state, nrow = 2, ncol = 5, page = 5)
+state_pages + facet_wrap_paginate(~ state, nrow = 2, ncol = 5, page = 6)
+
+```
+**Observations**
+- I looked at each state individually and checked to see how quickly each state/territory got to 10,000 cases.
+- This seemed to explain why there was such a big scare in the early days of the pandemic. Even though the number of cases didn't peak early on, the number of cases shot up very rapidly and it seemed to be growing unconstrained.
+- Notably there are a few states that seemed to do a good job at containing it at first. Of course there were the Mariana Islands and Virgin Islands that were isolated enough to contain the virus, but also places with bigger populations like Connecticut, Hawaii, and Montana
+- Hawaii caught my eye because it has an initial spike in cases, and seems to handle it for a bit before spiking again.
+- Knowing that Hawaii consists of several islands, my hypothesis is that one of the smaller islands had a ton of cases, and once that was contained, it took a little longer for the rest of the islands to catch it.
+```{r}
+hawaii <- df_normalized %>%
+  filter(
+    state == "Hawaii", 
+    !is.na(cases)
+    ) %>%
+  group_by(county) %>%
+  mutate(new_cases  = cases  - lag(cases,  default = 0),
+         new_deaths = deaths - lag(deaths, default = 0))
+hawaii
+
+hawaii %>%
+  ggplot(aes(date, new_cases)) +
+  geom_line()
+  
+```
+**Observations**
+- I did something very similar with just Hawaii's data as I did with all of the states, and plotted the number of new cases per day
+- It seems to show three major spikes like the general data. The first spike seems to come a little sooner.
+- There is a tiny spike at the start that could explain the bump I saw in the "days since first case vs. cases" graph.
+- There is a larger spacing in data at the end. This is likely because Hawaii stopped recording its data everyday and started recording its data weekly, or bi-daily, or something like that. That would also explain why there seems to be a fourth spike.
+```{r}
+hawaii %>%
+  filter(cases <= 10000,
+         county != "Unknown",
+         county != "Kalawao") %>%
+  ggplot(aes(date, new_cases, color = county)) + 
+  geom_line()
+
+```
+**Observation**
+- This graph shows that the different islands peak at different times, which supports the claim that one island got it before the rest of the islands got it.
+- However, these peaks all happen well after the dates of the first reported cases.
+- Their peaks are also coorelated with population. Honolulu has the highest population of almost a million, Hawaii and Maui have a population between 150,000 and 250,00 and Kauai has a population of ~75,000. Kalawao was not included because it has a county population of 82 people.
+```{r}
+hawaii %>%
+  filter(
+         county != "Unknown",
+         county != "Kalawao") %>%
+  ggplot(aes(date, cases, color = county)) +
+  geom_line()
+```
+**Observation**
+- This graph supports that the peaks show more of a population trend rather than the virus jumping from island to island.
+- Honolulu county has all three peaks, Maui and Hawaii have the second and third peaks, and Kauai has the third peak.
+- This suggest that the third wave of Covid spread the most, the second wave spread the next most, and the first wave spread the least.
+- This is supported by the data in the first graph showing the general trends of Covid across the United States.
+- I still wanted to figure out why there was the initial hump in the days since first case vs. cases" graph.
+- I looked at this story: https://www.politico.com/news/magazine/2020/06/19/hawaii-covid-success-story-322919.
+- It was published on June 19th, 2020, and although it prematurely celebrates Hawaii as a Covid-19 success story, it does talk about how well Hawaii did at containing Covid at the start of the pandemic. 
+- It cites the 14-day quarantine requirement and early tracking of cases as causes for why Hawaii did so well. It also does help that it's an isolated island.
 ### Aside: Some visualization tricks
 <!-- ------------------------- -->
 
@@ -393,7 +505,7 @@ df_normalized %>%
     aes(date, cases_per100k, color = fct_reorder2(county, date, cases_per100k))
   ) +
   geom_line() +
-  scale_y_log10(labels = scales::label_number_si()) +
+  scale_y_log10(labels = scales::label_number()) +
   scale_color_discrete(name = "County") +
   theme_minimal() +
   labs(
