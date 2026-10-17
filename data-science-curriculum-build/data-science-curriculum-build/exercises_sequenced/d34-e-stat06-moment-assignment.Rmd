@@ -56,7 +56,9 @@ Compute the mean of $2 Z + 3$, where $Z$ is a standard normal.
 
 ```{r q1-task}
 ## TASK: Compute the mean of 2 Z + 3
-E_q1 <- NA_real_
+Z <-0
+E_q1 <- mean(2*Z + 3)
+E_q1
 ```
 
 Use the following test to check your answer.
@@ -77,7 +79,9 @@ Compute the mean of $2 Z_1 + 3 Z_2$, where $Z_1, Z_2$ are separate standard norm
 
 ```{r q2-task}
 ## TASK: Compute the mean of 2 Z1 + 3 Z2
-E_q2 <- NA_real_
+Z1 <- 0
+Z2 <- 0
+E_q2 <- mean(2*Z1 + 3*Z2)
 ```
 
 Use the following test to check your answer.
@@ -101,7 +105,7 @@ Compute the variance of $2 Z + 3$, where $Z$ is a standard normal.
 
 ```{r q3-task}
 ## TASK: Compute the mean of 2 Z + 3
-V_q3 <- NA_real_
+V_q3 <- 2^2
 ```
 
 Use the following test to check your answer.
@@ -123,7 +127,8 @@ Compute the variance of $2 Z_1 + 3 Z_2$, where $Z_1, Z_2$ are *uncorrelated* sta
 
 ```{r q4-task}
 ## TASK: Compute the variance of 2 Z1 + 3 Z2
-V_q4 <- NA_real_
+# If variables are uncorrelated the covariance = 0
+V_q4 <- 2^2 + 3^2
 ```
 
 Use the following test to check your answer.
@@ -147,8 +152,8 @@ $$\mathbb{E}[X] = 1, \mathbb{V}[X] = 4$$.
 
 ```{r q5-task}
 ## TASK: Compute the mean and variance
-E_q3 <- NA_real_
-V_q3 <- NA_real_
+E_q3 <- 0
+V_q3 <- (.5*1)^2 *4
 ```
 
 Use the following test to check your answer.
@@ -168,8 +173,8 @@ Compute the mean and variance of $1 + 2 Z$, where $Z$ is a standard normal.
 
 ```{r q6-task}
 ## TASK: Compute the mean and variance
-E_q4 <- NA_real_
-V_q4 <- NA_real_
+E_q4 <- 1 + 2*0
+V_q4 <- 2^2
 ```
 
 Use the following test to check your answer.
