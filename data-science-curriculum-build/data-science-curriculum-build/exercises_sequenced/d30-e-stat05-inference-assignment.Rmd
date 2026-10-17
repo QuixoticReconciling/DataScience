@@ -194,8 +194,27 @@ Copy and modify the previous code to estimate a sampling distribution for the *s
 ```{r q1-task}
 ## TASK: Adapt the code given in the previous chunk
 df_q1 <-
-  df_data_norm
-
+  df_data_norm %>%
+  # Create the bootstrap resamplings
+  bootstraps(., times = 1000) %>% 
+  # Finicky code: Compute an estimate for each resampling (`splits` column)
+  mutate(
+    # The `map_*` family of functions iterates a provided function over a column
+    sample_sd = map_dbl(
+      # Chosen column
+      splits,
+      # Function we provide (defined inline)
+      function(split_df) {
+        # First, we use `analysis()` to translate the split into usable data
+        split_df %>% 
+          analysis() %>% 
+          # Then, we carry out whatever analysis we want
+          summarize(sample_sd = sd(x)) %>% 
+          # One last wrangling step
+          pull(sample_sd)
+      }
+    )
+  )
 df_q1
 ```
 
@@ -249,7 +268,7 @@ df_q2 <-
     )
   ) %>% 
 # TODO: Complete the following code
-  # summarize(se = ?)
+  summarize(se = sd(sample_mean)/sqrt(1))
 
 df_q2
 ```
@@ -281,8 +300,8 @@ df_q3 <-
   df_demo %>% 
   summarize(
 # task_begin
-    # mean_lo = ?,
-    # mean_up = ?,
+    mean_lo = quantile(sample_mean, alpha/2),
+    mean_up = quantile(sample_mean, 1-alpha/2),
 # task_end
   )
 ```
