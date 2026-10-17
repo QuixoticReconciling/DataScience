@@ -79,7 +79,12 @@ The presence of these "ghost" points provides more context; they facilitate the 
 ## comparison.
 diamonds %>%
   ggplot(aes(carat, price)) +
-  geom_point()
+  geom_point(
+    data = . %>% select (-cut),
+    color = "gray80"
+  ) +
+  geom_point() +
+  facet_wrap(~cut)
 ```
 
 
@@ -118,12 +123,27 @@ There's *a lot* going on this figure, including a number of subtle points. Let's
 
 ```{r q2-task}
 ## TODO: Create a set of small multiples plot from these data
-as_tibble(iris) %>%
-  pivot_longer(
-    names_to = "part",
-    values_to = "length",
-    cols = -Species
-  )
+# as_tibble(iris) %>%
+#   pivot_longer(
+#     names_to = "part",
+#     values_to = "length",
+#     cols = -Species
+#   )
+iris %>%
+  separate(part, into = c("part", "dimension"), sep = "\\.") %>%
+  mutate(id = (row_number() - 1) %/% 4) %>%
+  pivot_wider(
+    names_from = dimension,
+    values_from = length,
+  ) %>%
+  select(-id) %>%
+  ggplot(aes(Length, Width)) +
+  geom_point(
+    data = . %>% select(-Species),
+    color = "gray80"
+  ) +
+  geom_point() +
+  facet_grid(vars(part), vars(Species))
 ```
 
 
