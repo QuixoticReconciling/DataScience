@@ -111,8 +111,8 @@ Pick a sample size $n$ and generate $n$ points *uniform randomly* in the square 
 
 ```{r q1-task}
 ## TASK: Choose a sample size and generate samples
-n <- NA_real_ # Choose a sample size
-df_q1 <- NA # Generate the data
+n <- 1000
+df_q1 <- tibble(x = rnorm(n), y = rnorm(n))
 ```
 
 Use the following to check that you've used the correct variable names. (NB. This does not check correctness.)
@@ -148,7 +148,9 @@ Answer the questions below.
 ## TASK: Finish implementing this function
 stat <- function(x, y) {
   # TODO: Finish implementing this function
+  4 * x * y
 }
+mean(stat)
 ```
 
 Implement your own assert statements. They should pass using your implementation of `stat()`, *but* they should also be *correct*.
