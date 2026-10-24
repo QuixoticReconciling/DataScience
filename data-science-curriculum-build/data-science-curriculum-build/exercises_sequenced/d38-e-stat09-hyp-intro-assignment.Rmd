@@ -82,14 +82,21 @@ Based on your results, can you reject the null hypothesis **H_0** for the popula
 ```{r q1-task}
 ## TASK: Compute a confidence interval on the mean, use to answer the question
 ## above
-df_sample
+C <- 0.99
+df_sample %>%
+  summarize(
+    c_lo = mean(price) - qnorm(1 - (1 - C) / 2) * sd(price)/sqrt(n()),
+    c_hi = mean(price) + qnorm(1 - (1 - C) / 2) * sd(price)/sqrt(n())
+  )
 price_threshold
 ```
 
 **Observations**:
 
 - Can you reject the null hypothesis **H_0**?
+  No
 - How does this affect your decision?
+  Since we cannot say the mean of the price of all diamonds is greater than the threshold, we fall back on our default action and do not buy the diamonds.
 
 ## Different Scenario, Different Hypotheses
 <!-- -------------------------------------------------- -->
@@ -125,12 +132,29 @@ Use the techniques you learned in `e-stat09-bootstrap` to estimate a 99-percent 
 ```{r q2-task}
 ## TASK: Estimate a confidence interval for the proportion of high-cut diamonds
 ## in the population. Look to `e-stat09-bootstrap` for starter code.
+set.seed(42)
+alpha <- 0.01
+
+fit_fun <- function(split_df){
+  analysis(split_df) %>%
+    summarize(estimate = mean((cut == "Premium") | (cut == "Ideal"))) %>%
+    pull(estimate)
+}
+df_sample %>%
+  bootstraps(., times = 1000)%>%
+  mutate(p_hat = map_dbl(splits, fit_fun)) %>%
+  summarize(
+    cut_lo = quantile(p_hat, alpha/2),
+    cut_hi = quantile(p_hat, 1 - alpha/2)
+  )
 ```
 
 **Observations**:
 
 - Can you reject the null hypothesis **H_0**?
+  No, the confidence level stays above 50%
 - How does this affect your decision?
+  We go with the alternative action and buy diamonds in bulk.
 
 ## Closing Thoughts
 <!-- -------------------------------------------------- -->
@@ -145,6 +169,10 @@ Compute the population mean price for the diamonds. Did you reject the null hypo
 
 ```{r q3-task}
 ## TASK: Compute the population mean of diamond price
+df_population %>%
+  summarize(
+    mean_price = mean(price)
+  )
 
 price_threshold
 ```
@@ -152,8 +180,11 @@ price_threshold
 **Observations**:
 
 - Did you reject the null hypothesis in q1?
+  No, I did not reject the null hypothesis.
 - What is the actual truth?
+  The value of diamonds we're getting is less than what we paid for
 - What decision did you make?
+  I made the decision to not buy the diamonds.
 
 When I did q1, I **did not reject the null**. Note the weird wording there: **did not reject the null**, rather than "accepted the null". In this hypothesis testing framework we never actually *accept* the null hypothesis, we can only *fail to reject the null*. What this means is that we still maintain the possibility that the null is false, and all we can say for sure is that our data are not sufficient to reject the null hypothesis.
 
@@ -167,13 +198,20 @@ Compute the proportion of high-cut diamonds in the population. Did you reject th
 
 ```{r q4-task}
 ## TASK: Compute the population proportion of high-cut diamonds
+df_population %>%
+  summarize(
+    proportion = mean((cut == "Premium") | (cut == "Ideal"))
+  )
 ```
 
 **Observations**:
 
 - Did you reject the null hypothesis in q2?
+  Yes I did reject the null hypothesis
 - What is the actual truth?
+  Over 50% of the diamonds are premium or ideal in cut quality
 - What decision did you make?
+  I made the decision to buy diamonds in bulk.
 
 When I did q2 I **did reject the null hypothesis**. It happens that this was the correct choice; the true proportion of high-cut diamonds is greater than 50-percent.
 

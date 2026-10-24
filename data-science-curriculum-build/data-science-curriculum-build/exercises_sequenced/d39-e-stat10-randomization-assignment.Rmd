@@ -105,11 +105,11 @@ experimental_design %>%
 *Observations*
 
 - Which experimental condition do you *expect* to have greater yield? The Treatment `T` or Control `C`?
-  - (Your response here)
+  - I would expect the treatment field to have a greater yield.
 - Which experimental condition do your results suggest has a higher mean yield? The Treatment `T` or Control `C`?
-  - (Your response here)
+  - The results suggest that the control has a higher yield.
 - The true difference between the treatment mean and control mean is such that the treatment yield should be `1` unit higher. How does your difference compare with that difference?
-  - (Your response here)
+  - It is way off. The treatment yield is almost half a unit lower.
 
 ## Confound - Increased yield due to proximity to the river!
 
@@ -156,7 +156,7 @@ Try defining a different order of the plots to overcome the confound (river).
 
 ```{r q2-task}
 ## TODO: Define your own experimental design
-your_design <- NA_character_
+your_design <- c("T", "C", "C", "T", "T", "C")
 
 ## NOTE: No need to edit; use this to simulate your design
 your_design %>%
@@ -171,11 +171,11 @@ your_design %>%
 *Observations*
 
 - Which experimental condition do your results suggest has a higher mean yield? The Treatment `T` or Control `C`?
-  - (Your response here)
+  - My results suggest that the treatment crops have a higher mean yield.
 - The true difference between the treatment mean and control mean is such that the treatment yield should be `1` unit higher. How does your difference compare with that difference?
-  - (Your response here)
+  - It is very close to 1
 - What effects are you seeing? The effect of the Treatment `T` *only*, or the combined effects of the Treatment and the river? How does this affect your estimate of the effect of the treatment?
-  - (Your response here)
+  - We are seeing the effect of treatment `T` and of the river. This affects the estimate as the crops that are closer to the river will have a higher yield. To try and compensate for this I created a snake pattern.
 
 ## Randomization to the rescue!
 
@@ -209,6 +209,7 @@ set.seed(101)
 ## Simulate the experimental results
 experimental_design %>%
   ## TODO: Randomize the plot order
+  sample() %>%
   simulate_yield() %>%
   group_by(condition) %>%
   summarize(
@@ -220,11 +221,11 @@ experimental_design %>%
 *Observations*
 
 - Which experimental condition do you find has a higher mean yield? The Treatment `T` or Control `C`?
-  - (Your response here)
+  - Treatment `T`
 - Since you've randomized the conditions, will the confound (river) have a *consistent* effect on the outcome?
-  - (Your response here)
+  - The confound cannot have a consistent effect on the outcome due to randomization.
 - The true difference between the treatment mean and control mean is one unit. How does your difference compare with that value?
-  - (Your response here)
+  - My difference is about 0.6, which is less than the true difference.
 
 ## Why does randomization work?
 

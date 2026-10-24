@@ -58,7 +58,11 @@ Compute the errors $\epsilon_c$ using Michelson's measurements `c_meas` and the 
 ```{r q1-task}
 ## TASK: Compute `epsilon_c`
 df_q1 <-
-  df_michelson
+  df_michelson %>%
+  mutate(
+    epsilon_c = c_meas - c_true
+  )
+  
 
 df_q1 %>%
   ggplot(aes(epsilon_c)) +
@@ -74,13 +78,20 @@ Estimate the mean and standard deviation of $\epsilon_c$ from `df_q1.` Is the er
 ```{r q2-task}
 ## TASK: Estimate `epsilon_mean` and `epsilon_sd` from df_q1
 df_q2 <-
-  df_q1
+  df_q1 %>%
+  summarize(
+    epsilon_mean = mean(epsilon_c),
+    epsilon_sd = sd(epsilon_c)
+  )
+df_q2
 ```
 
 **Observations**:
 
 - Is `epsilon_mean` large or small compared to `epsilon_sd`?
+  The mean is larger
 - Is `epsilon_mean` large or small compared to `c_michelson_uncertainty?`?
+  The mean is larger compared to michelsons uncertainty
 - `epsilon_mean` is about twice `epsilon_sd`; it is much larger. These measurements are *biased*.
 - `epsilon_mean` is about three times `c_michelson_uncertainty`; it is much larger.
 
@@ -107,6 +118,13 @@ Use a CLT approximation to construct a $99%$ confidence interval on the mean of 
 ```{r q3-task}
 ## TASK: Compute a 99% confidence interval on the mean of c_meas
 C <- 0.99
+c_meas <- df_michelson%>%pull(c_meas)
+df_q3 <-
+  df_q1 %>%
+  summarize(
+    c_lo = mean(c_meas) - qnorm( 1 - (1 - C) / 2 )* sd(c_meas)/sqrt(n()),
+    c_hi = mean(c_meas) + qnorm( 1 - (1 - C) / 2 ) * sd(c_meas)/sqrt(n())
+  )
 
 ## NOTE: This checks if the CI contains c_true
 (df_q3 %>% pull(c_lo) <= c_true) & (c_true <= df_q3 %>% pull(c_hi))

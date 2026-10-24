@@ -66,8 +66,8 @@ ci_lwr <- mu - 1.96 * sd / sqrt(n)
 ci_upr <- mu + 1.96 * sd / sqrt(n)
 ## TODO: Use the equations above to compute a prediction interval for the
 ##       normal distribution rnorm(mean = mu, sd = sd)
-pi_lwr <- NA_real_
-pi_upr <- NA_real_
+pi_lwr <- mu - 1.96 * sd
+pi_upr <- mu + 1.96 * sd
 ```
 
 Use the following tests to check your work.
@@ -136,7 +136,17 @@ Using the formulas above, estimate CI and PI using `diamonds_train`. Visualize t
 ```{r q2-task}
 ## TODO: Estimate CI and PI using the formulas from q1, use diamonds_train
 ##       and assign your estimates to columns ci_lwr, ci_upr, pi_lwr, pi_upr
-df_q2 <- NA
+df_q2 <- diamonds_train %>%
+  summarize(
+    mu = mean(price),
+    sd = sd(price),
+    ci_lwr = mu - 1.96 * sd / sqrt(n()),
+    ci_upr = mu + 1.96 * sd / sqrt(n()),
+    pi_lwr = mu - 1.96 * sd,
+    pi_upr = mu + 1.96 * sd
+  ) %>%
+  select(-mu, -sd)
+
 df_q2
 ```
 
@@ -167,8 +177,12 @@ df_q2 %>%
 **Observations**:
 
 - Compare the intervals against the price observations; do the intervals and observations relate to each other like you would expect?
+  The CI is located in the median area of the data, whereas the prediction interval spans a wider area and contains negative values.
 - Are the CI and PI working correctly? How would you check this?
+  Check CI against some sort of mean. Ideally the population mean.
+  Check PI by drawing tons of entries from the dataset and seeing if most of them fall within that range.
 - What *assumptions* did you make when defining your CI and PI above? Are those assumptions valid for these data?
+  One assumption was that these were normal distributions. This is not a valid assumption for the data.
 
 ### __q3__ Test your intervals
 
@@ -177,13 +191,30 @@ Test whether your CI and PI are constructed correctly: Remember the definitions 
 ```{r q3-task}
 ## TODO: Devise a test to see if your CI and PI are correctly reflecting
 ##       the diamonds population; use diamonds_validation in your testing
+
+mu    <- diamonds_train %>% summarize(m = mean(price)) %>% pull(m)
+sd <- diamonds_train %>% summarize(s = sd(price)) %>% pull(s)
+x_new <- rnorm(100000, mean = mu, sd = sd)
+diamonds_validation <- diamonds_train %>%
+  summarize(
+    ci_lwr = mu - 1.96 * sd / sqrt(n()),
+    ci_upr = mu + 1.96 * sd / sqrt(n()),
+    ci_check = mean(price),
+    pi_lwr = mu - 1.96 * sd,
+    pi_upr = mu + 1.96 * sd,
+    pi_check = mean(x_new > pi_lwr & x_new < pi_upr)
+  )
+diamonds_validation
 ```
 
 **Observations**:
 
 - Does your CI include the mean price of diamonds?
+  -Yes.
   - Do we expect the CI it to *always* include the true parameter?
+    Not always.
 - Does your PI include the appropriate fraction of diamond prices?
+  It contains 0.94978 which is pretty close to .95. I would say this is more than reasonable.
 
 <!-- include-exit-ticket -->
 # Exit Ticket
