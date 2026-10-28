@@ -209,7 +209,11 @@ df_longer
 df_longer %>%
   ggplot(aes(value, bacteria, color = class, shape = gram)) +
   scale_x_log10() +
-  geom_point(size = 3)
+  geom_point(size = 3) +
+  labs(
+    title = "MIC of Antibiotics for 16 Bacteria on a log scale",
+    x = "MIC"
+  )
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.1-1.png)<!-- -->
@@ -227,17 +231,19 @@ your other visuals.
 ``` r
 # WRITE YOUR CODE HERE
 df_longer %>%
-  ggplot(aes(gram, value)) +
-  geom_violin() +
-  geom_point(aes(color = bacteria)) +
-  scale_y_log10() +
+  group_by(class) %>%
+  mutate(extreme = value == min(value) | value == max(value)) %>%
+  ungroup() %>%
+  mutate(bacteria = fct_reorder(bacteria, value)) %>%
+  ggplot(aes(value, bacteria, shape = gram)) +
+  geom_point(aes(color = extreme)) +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red"), guide = "none") +
+  scale_x_log10() +
   facet_grid(cols = vars(class)) +
-  geom_label_repel(
-    data = .%>%
-      group_by(class) %>%
-      filter(value == min(value) | value == max(value)) %>%
-      ungroup(),
-    aes(label = bacteria), size = 2.5)
+  labs(
+    title = "MIC of Antibiotics for 16 Bacteria on a log scale",
+    x = "MIC"
+  )
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.2-1.png)<!-- -->
@@ -254,9 +260,14 @@ your other visuals.
 ``` r
 # WRITE YOUR CODE HERE
 df_longer %>%
+  mutate(bacteria = fct_reorder(bacteria, value)) %>%
   ggplot(aes(value, bacteria, fill = class)) +
   scale_x_log10() +
-  geom_col() 
+  geom_col(position = "dodge") +
+  labs(
+    title = "MIC of Antibiotics for 16 Bacteria on a Log scale",
+    x = "MIC"
+  )
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.3-1.png)<!-- -->
@@ -276,7 +287,11 @@ df_longer %>%
   filter(class == "penicillin") %>%
   ggplot(aes(value, bacteria, color = gram)) +
   geom_point() +
-  scale_x_log10()
+  scale_x_log10() +
+  labs(
+    title = "MIC for Penicillin against 16 bacteria on a log scale",
+    x = "MIC"
+  )
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.4-1.png)<!-- -->
@@ -293,16 +308,101 @@ your other visuals.
 ``` r
 # WRITE YOUR CODE HERE
 df_longer %>%
+  mutate(bacteria = fct_reorder(bacteria, value)) %>%
   ggplot(aes(bacteria, value, color = class, group = class)) +
   geom_line() +
   geom_point() +
   scale_y_log10() +
   theme(
     axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1)
+  ) +
+  labs(
+    title = "MIC of Antibiotics for 16 Bacteria on a Log scale",
+    y = "MIC"
   )
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.5-1.png)<!-- -->
+
+``` r
+# mic_wide <- df_longer %>%
+#   mutate(log_value = log10(value)) %>%
+#   select(bacteria, class, log_value) %>%
+#   pivot_wider(names_from = class, values_from = log_value) %>%
+#   column_to_rownames("bacteria")
+# 
+# mic_wide
+```
+
+``` r
+# df_longer %>%
+#   filter(str_detect(bacteria, "Strept|Diplo")) %>%
+#   ggplot(aes(bacteria, value, color = class, group = class)) +
+#   geom_line() +
+#   geom_point(size = 3) +
+#   theme(axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1)) +
+#   labs(y = "MIC (µg/mL)",
+#        x = "Bacteria Species")
+# 
+# df_longer %>%
+#   filter(str_detect(bacteria, "Strept|Diplo")) %>%
+#   ggplot(aes(bacteria, value, fill = class)) +
+#   geom_col() +
+#   theme(axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1)) +
+#     labs(y = "MIC (µg/mL)",
+#        x = "Bacteria Species")
+```
+
+``` r
+# df_new <- data.frame(
+#   Streptococcus_Bacteria = c("constellatus", "agalactiae", "anginosus", "uberis", "dysgalactiae"),
+#   Amoxicillin_016 = c(1/53, 9/388, 4/164, 3/294, 124/234),
+#   Benzylpenicillin_016 = c(4/53, 188/3235, 51/294, 38/293, 16/234),
+#   Amoxicillin_125 = c(17/53, 19/388, 60/164, 17/294, 0/234),
+#   Benzylpenicillin_125 = c(14/53, 81/3235, 20/294, 15/293, 0/234)
+# )
+# df_new %>%
+#   pivot_longer(
+#     names_to = "mic_type",
+#     values_to = "values",
+#     cols = (-Streptococcus_Bacteria)
+#   ) %>%
+#   group_by(mic_type) %>%
+#   ggplot(aes(Streptococcus_Bacteria, values, fill = mic_type, group = mic_type)) +
+#   geom_col() +
+#   theme(axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1)) +
+#       labs(y = "MIC (µg/mL)",
+#        x = "Bacteria Species")
+```
+
+``` r
+# df_trick <- data.frame(
+#   Streptococcus_Bacteria = c("constellatus", "agalactiae", "anginosus", "uberis", "dysgalactiae", "kingae"),
+#   Amoxicillin_0.16 = c(1/53, 9/388, 4/164, 3/294, 124/234, 2/202),
+#   Benzylpenicillin_016 = c(4/53, 188/3235, 51/294, 38/293, 16/234, 71/202),
+#   Amoxicillin_125 = c(17/53, 19/388, 60/164, 17/294, 0/234, 65/202),
+#   Benzylpenicillin_125 = c(14/53, 81/3235, 20/294, 15/293, 0/234, 15/202)
+# )
+# df_edit <- df_trick %>%
+#   pivot_longer(
+#     cols = -Streptococcus_Bacteria,
+#     names_to = "mic_type",
+#     values_to = "values"
+#   ) %>%
+#   mutate(Streptococcus_Bacteria = fct_relevel(Streptococcus_Bacteria, "kingae"))
+# 
+# df_edit %>%
+#   ggplot(aes(Streptococcus_Bacteria, values, fill = mic_type)) +
+#   geom_col(position = "dodge") +
+#   geom_vline(xintercept = 1.5, linetype = "dashed", color = "grey40") +
+#   labs(
+#     x = "Bacteria Species",
+#     y = "Observations at MIC concentration / total observations",
+#     fill = expression("MIC concentration (" * mu * "g/mL)")
+#   ) +
+#   theme_minimal() +
+#   theme(axis.text.x = element_text(angle = -45, hjust = 0, vjust = 1))
+```
 
 ### **q2** Assess your visuals
 
@@ -335,10 +435,11 @@ effective against negative gram stains, and is least effective against
 Aerobacter aerogenes. - Which of your visuals above (1 through 5) is
 **most effective** at helping to answer this question? - Visual 2. -
 Why? - The second visual is most effective at answering the questions as
-the box plots show the general trend of effectiveness for the gram
-strains. - To show the effectiveness against various bacteria, the graph
-uses a few labels to show the amount of antibiotic needed for some key
-bacteria genera.
+this one highlights in red the lowest and highest values for the MICs of
+each antibiotic. It also communicates gram strains clearly so you can
+see general trends in those as well. - To show the effectiveness against
+various bacteria, the graph uses a few labels to show the amount of
+antibiotic needed for some key bacteria genera.
 
 #### Guiding Question 2
 
@@ -355,7 +456,7 @@ Streptococcus family for all three antibiotics. This would suggest that
 it displays similar qualities to the rest of the bacteria in that
 family. - Which of your visuals above (1 through 5) is **most
 effective** at helping to answer this question? - visual 3. - Why? -
-Suprisingly the stacked bar chart works really well here. By looking at
+Suprisingly the dodged bar chart works really well here. By looking at
 the amount of each antibiotic needed for an MIC, you can see that what
 was Diplococcus pneumoniae closely matches up with both Streptococcus
 hemolyticus and Streptococcus viridans for all three of the values. -
