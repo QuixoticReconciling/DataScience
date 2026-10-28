@@ -1,7 +1,7 @@
 Estimating Pi With a Shotgun
 ================
-(Your name here)
-2020-
+Trevor McDonald
+2026-10-27
 
 - [Grading Rubric](#grading-rubric)
   - [Individual](#individual)
@@ -198,9 +198,10 @@ square $x \in [0, 1]$ and $y \in [0, 1]$.
 ## TASK: Choose a sample size and generate samples
 set.seed(42)
 n <- 5000
-x <- runif(n)
-y <- runif(n)
-df_q1 <- tibble(x, y)
+df_q1 <- tibble(
+  x = runif(n = n),
+  y = runif(n = n)
+)
 ```
 
 Use the following to check that you’ve used the correct variable names.

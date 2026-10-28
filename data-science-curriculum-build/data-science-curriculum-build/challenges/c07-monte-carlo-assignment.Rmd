@@ -1,7 +1,7 @@
 ---
 title: "Estimating Pi With a Shotgun"
-author: "(Your name here)"
-date: 2020-
+author: "Trevor McDonald"
+date: 2026-10-27
 output:
   github_document:
     toc: true
@@ -113,9 +113,10 @@ Pick a sample size $n$ and generate $n$ points *uniform randomly* in the square 
 ## TASK: Choose a sample size and generate samples
 set.seed(42)
 n <- 5000
-x <- runif(n)
-y <- runif(n)
-df_q1 <- tibble(x, y)
+df_q1 <- tibble(
+  x = runif(n = n),
+  y = runif(n = n)
+)
 ```
 
 Use the following to check that you've used the correct variable names. (NB. This does not check correctness.)
