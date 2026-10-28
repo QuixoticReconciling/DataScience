@@ -207,6 +207,7 @@ df_longer
 
 ``` r
 df_longer %>%
+  mutate(bacteria = fct_reorder(bacteria, value)) %>%
   ggplot(aes(value, bacteria, color = class, shape = gram)) +
   scale_x_log10() +
   geom_point(size = 3) +
@@ -285,6 +286,7 @@ your other visuals.
 # WRITE YOUR CODE HERE
 df_longer %>%
   filter(class == "penicillin") %>%
+  mutate(bacteria = fct_reorder(bacteria, value)) %>%
   ggplot(aes(value, bacteria, color = gram)) +
   geom_point() +
   scale_x_log10() +
