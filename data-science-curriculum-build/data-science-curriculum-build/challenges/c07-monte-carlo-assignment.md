@@ -196,6 +196,7 @@ square $x \in [0, 1]$ and $y \in [0, 1]$.
 
 ``` r
 ## TASK: Choose a sample size and generate samples
+set.seed(42)
 n <- 5000
 x <- runif(n)
 y <- runif(n)
@@ -344,7 +345,7 @@ df_q3
     ## # A tibble: 1 × 1
     ##   pi_est
     ##    <dbl>
-    ## 1   3.12
+    ## 1   3.15
 
 Use the following to check that you’ve used the correct variable names.
 (NB. This does not check correctness.)
@@ -393,6 +394,7 @@ estimate. Answer the questions below.
 
 ``` r
 ## TASK: Finish the code below
+set.seed(42)
 df_q4 <- 
   df_q1 %>% 
   bootstraps(., times = 1000) %>% 
@@ -424,7 +426,7 @@ df_q4 %>%
 
 - What is a range of plausible values, based on the sampling
   distribution you’ve generated?
-  - Range of plausible values go from more than 3.0 to less than 3.35.
+  - Range of plausible values go from more than 3.075 to less than 3.25.
 
 ### **q5** Bootstrap percentile confidence interval
 
@@ -451,7 +453,7 @@ df_q5
     ## # A tibble: 1 × 2
     ##   pi_lo pi_up
     ##   <dbl> <dbl>
-    ## 1  3.07  3.17
+    ## 1  3.11  3.20
 
 ### **q6** CLT confidence interval
 
@@ -471,34 +473,31 @@ done something *wrong* in one of the tasks….
   summarize(
     pi_est = mean(stat(x, y)),
     se = sd(stat(x,y)) / sqrt(n),
-    pi_lo = pi_est - qnorm( 1 - (1 - alpha) / 2 ) * se,
-    pi_hi = pi_est + qnorm( 1 - (1 - alpha) / 2 ) * se,
+    pi_lo = pi_est - qnorm( 1 - (1 - 0.95) / 2 ) * se,
+    pi_hi = pi_est + qnorm( 1 - (1 - 0.95) / 2 ) * se,
   )
 ```
 
     ## # A tibble: 1 × 4
     ##   pi_est     se pi_lo pi_hi
     ##    <dbl>  <dbl> <dbl> <dbl>
-    ## 1   3.12 0.0234  3.12  3.12
+    ## 1   3.15 0.0231  3.10  3.19
 
 **Observations**:
 
 - Does your intervals include the true value of $\pi$?
   - (Bootstrap CI: yes)
-  - (CLT CI: no)
+  - (CLT CI: yes)
 - How closely do your bootstrap CI and CLT CI agree?
-  - The bootstrap CI has a much larger range than the CLT CI. This is
-    likely due to a coding issue, as currently there is a ‘.04’
-    difference between the ‘pi_lo’ values and a .04 difference between
-    the ‘pi_hi’ values as well.
+  - They agree very closely. There is less than a .01 difference between
+    both the pi_lo and pi_hi
 - Comment on the width of your CI(s). Would your estimate of $\pi$ be
   good enough for roughly estimating an area (e.g., to buy enough paint
   for an art project)? Would your estimate of $\pi$ be good enough for
   precisely calculating a trajectory (e.g., sending a rocket into
   orbit)?
   - I would say these values are good enough for a rough estimate, as
-    even the bootstrap CI that is much larger than the CLT CI has a
-    range smaller than .1
+    they both approximate pi with less than a .06 error on either side
   - I would not want to have either of these approximations of $\pi$ if
     I was sending something into orbit.
 - What would be a *valid* way to make your CI more narrow?
