@@ -1,7 +1,7 @@
 ---
 title: "The Islands, Part 1: Design"
-author: "(Your name here)"
-date: 202X-XX-XX
+author: Trevor McDonald
+date: 2026-10-26
 output:
   github_document:
     toc: true
@@ -66,15 +66,15 @@ NB. When Zach counted the homes (on 2025-01-08), he found 20 unoccupied out of 5
 **Observations**:
 
 - What is the total number of homes in Helvig?
-  - (Your response here)
+  - There are 625 total homes
 - What is the number of unoccupied homes? (*Hint*: This is not given anywhere. You will have to count them!)
-  - (Your response here)
+  - 2??
 - What percent of homes are *occupied*?
-  - (Your response here)
+  - 0.32% are unoccupied
 - Are there any sources of *real* uncertainty in the percent occupied you calculated?
-  - (Your response here)
+  - There is no real uncertainty because we have the entire population, not a sample.
 - Are there any sources of *erroneous* uncertainty in the percent occupied you calculated?
-  - (Your response here)
+  - I could've counted wrong
 
 Zach looked at the first 25 homes in Helvig and recorded the `age` and `name` of every person in those homes. These people are provided in `helvig-seq.csv`.
 
@@ -98,7 +98,15 @@ Make sure to include in `df_q3` the counts as a column named `n`, and the preval
 ## TASK: Compute the prevalence and sort
 df_q3 <- 
   df_sample_seq %>% 
-## TODO: Complete this code
+
+  mutate(
+    surname = str_remove(name, "^.*? "),
+  ) %>%
+  count(surname) %>%
+  mutate(
+    p = n/sum(n)
+  ) %>%
+  arrange(desc(n))
 
 df_q3
 ```
@@ -121,9 +129,9 @@ print("Very good!")
 *Observations*
 
 - What last name is most prevalent in `df_sample_seq`?
-  - (Your response here)
+  - Sorensen
 - Is this sample representative of *all* houses in Helvig? Why or why not?
-  - (Your response here)
+  - No, taking the first 25 observations is not the best way to do it as it is not representative of the population. This is also a relatively small sample when compared to the entire population (25 houses out of 536 houses for Zach's simulation). 
 
 In the exercises, we talked about the importance of random sampling. In the previous challenge, we were able to *simulate* a random sample by running a few lines of code. But in the real world, we have to work harder to gather a random sample. We'll do this in two stages: *plan* then *collect*.
 
@@ -135,8 +143,8 @@ Complete the code below to draw a sample of size `n=25`. Replace `n_houses` with
 ## TASK: Set the parameters for this code block
 
 ## Select a random sample of houses
-# n_houses <- ??? # Total number of houses
-# n_sample <- ???  # Desired sample size
+n_houses <- 625 # Total number of houses
+n_sample <- 25  # Desired sample size
 
 set.seed(101)   # Set a seed for reproducibility
 
@@ -186,7 +194,7 @@ df_sample_random <-
 
 Use the following to check your work.
 
-```{r q3-tests}
+```{r q5-tests}
 ## NOTE: No need to change this
 # Check that the dataset has the correct column names
 assertthat::assert_that(setequal(
@@ -225,8 +233,8 @@ print("Great work!")
 *Observations*
 
 - Which sample---sequential or random---is more *representative* of all homes Helvig? Why?
-  - (Sequential or random?)
-  - (Write your 'why' here.)
+  - Random is more representative
+  - If you use the sequential method you run into a convenience problem. I don't know the layout of Helvig, but it could be that the first neighborhood we walk into in Helvig has a defining trait for all of its people there. Gathering random samples better shows the population as a whole.
 
 ### __q6__ Find common names: Random sample
 
@@ -239,14 +247,22 @@ df_sample_random %>%
   count(last) %>% 
   arrange(desc(n)) %>% 
   mutate(p = n / sum(n))
+
+df_q3
 ```
 
 *Observations*
 
 - Did you find any highly prevalent names using `df_sample_random` that you *didn't* find in q3 (using `df_sample_seq`)? Write them here.
-  - (Your response here)
+  - Names in `df_sample_random` that aren't in `df_sample_seq`
+    "Sato": 8
+    "Collins": 6
+    "Wilson": 4
+    "Edwards": 3
+    "Hall": 3
+    "Kimura": 3
 - Is there any reason that people with the same last name might tend to *live near each other*?
-  - (Your response here)
+  - They could be part of the same family and would want to remain close.
 
 You should have found some difference between the sequential and random samples. This is because we're only working with a *sample*---a limited number of observations from the entire population. We could go to every single house in Helvig and determine *exactly* how many people of each name there are (that's called a *census*), but the point of statistical inference is that we can make statements about a population using only a sample. What makes statistical inference powerful is that we can determine *how confident* we should be in our results, based on the size of our sample.
 
@@ -264,8 +280,13 @@ Complete the code below to write a helper function. Your function will compute t
 name_prevalence <- function(df, last = "Collins") {
   df %>% 
     ## TODO: Finish this code
-    mutate(term = "prevalence")
+    filter(!is.na(name)) %>%
+    summarize(
+      term = last,
+      estimate = mean(str_detect(name, last))
+    )
 }
+name_prevalence(df_sample_random, last = "Collins")
 ```
 
 Use the following code to check your results.
@@ -326,6 +347,8 @@ df_interval_bootstrap <-
       function(split_df) {
 ## TODO: Finish this code, using the name_prevalence() helper you implemented
 ## HINT: Remember that you need to use analysis() when operating on split_df
+        analysis(split_df) %>%
+          name_prevalence(last = "Sato")
       }
     )
   ) %>% 
@@ -339,10 +362,10 @@ df_interval_bootstrap
 **Observations**:
 
 - What is highest possible prevalence for your chosen name, based on the confidence interval you constructed?
-  - (Your response here)
+  - The 95% confidence interval given gives the highest possible prevalence of the chosen name to be approximately 21.5% of Helvig residence. That's over 1 in every 5 people.
 - Note that we used the *random* sample with the bootstrap procedure in this task. Could we use the bootstrap to make a confidence interval using the sequential sample (`df_sample_seq`) that would be representative of all of Helvig? Why or why not?
-  - (Yes or no.)
-  - (Write your 'why' here.)
+  - No.
+  - It wouldn't be representative of all of Helvig because its not a randomized sample of observations. For example, if someone was sampling West Hall but only sampled the second floor (only freshman) They would conclude that 100% of West Hall residents are taking desnat, qea1, and modsim. Without good random sampling, you end up with biased data that is not representative of the population.
 
 ### __q9__ Discover possible measurements
 
@@ -350,9 +373,9 @@ Click on a single islander (you can do this from one of the houses), and take a 
 
 *Hint*: The videos from the [Visitor Center](https://islands.smp.uq.edu.au/visitors.php) will be especially helpful for getting some ideas.
 
-- (Possible measurement #1)
-- (Possible measurement #2)
-- (Possible measurement #3)
+- Physiology info
+- Their employment
+- How often they travel
 
 ### __q10__ Planning a study (TEAMWORK)
 
@@ -362,27 +385,29 @@ Challenge 10 will be a team assignment where you plan and execute a statistical 
 
 - (What population are you going to study?)
   - All of the Islanders? Only the residents of Helvig? Participants meeting certain criteria (in which case, you need to list *covariates*)?
+  - We are looking at students attending university of Arcadia
 
 #### Quantity of interest
 
-- (Write your quantity of interest here)
+- Results from Attention Test
 
 #### Covariates
 
-- (Write any relevant covariates here)
-- (There's probably more than one!)
+- We are only playing classical music and the only instrument being played is Piano.
+- This claim can only make an inference on the University of Arcadia, not students at other universities or people at different ages.
+- We are not making claims on majors
 
 #### Observation or experiment?
 
 The Islands allows you to ask islanders to complete tasks. If you just take measurements on your participants, then it's an *observational study*. But if you also introduce something that's meant to change the outcome of a measurement (e.g., drinking coffee before taking a test), that's called an *experimental study*. You need to decide whether your study is observational or experimental.
 
-- (Observation or experiment?)
+- This is an experimental study because we're forcing our participants to do certain things and see the outcomes of it.
 
 #### Question / Hypothesis
 
 - (Write your question / hypothesis here)
-  - This could be an observational question, like "How are X and Y related in the population?"
-  - This could be an experimental question, like "What effect does X have on Y in the population?"
+  - Does actively playing music improve attention span?
+  - Does passively listening to music improve attention span?
 
 #### Sampling plan
 
@@ -393,3 +418,12 @@ The Islands allows you to ask islanders to complete tasks. If you just take meas
 - (For experiments only: How will you ensure any effects you observe are due to the treatment, and not due to other factors?)
 - (How will you choose your sample size?)
   - This should be a mix of how confident you want to be in your results, and what is actually *feasible* for your research team.
+  
+  -We will sample 25 people for our control group, 25 people for our passive music group, and 25 people for our actively playing group. This is mainly due to a time constraint, and it's around 10% of the student population.
+  - We will randomly take 25 students for each group, non-discriminant of the major.
+  - If they play the Piano, we will find another person by random means to ensure that any effects we observe are due to treatment and not other factors.
+  
+  - We will obtain consent from each participant before running the test.
+  - The first thing we do is give the participant an attention test.
+  - Based on whether they are in the control, passive, or active group, we give them their designated activity for the next three days.
+  - We give an attention test at the end of every day.
