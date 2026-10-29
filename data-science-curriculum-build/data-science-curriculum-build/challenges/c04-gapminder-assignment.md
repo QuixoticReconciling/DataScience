@@ -131,8 +131,12 @@ gapminder%>%glimpse()
 
 ``` r
 ## TASK: Find the largest and smallest values of `year` in `gapminder`
-year_max <- gapminder %>% pull(year) %>% max()
-year_min <- gapminder %>% pull(year) %>% min()
+year_max <- gapminder %>% 
+  summarize(max(year)) %>% 
+  pull()
+year_min <- gapminder %>% 
+  summarize(min(year)) %>% 
+  pull()
 year_max
 ```
 
@@ -215,6 +219,26 @@ gapminder %>%
 
 ![](c04-gapminder-assignment_files/figure-gfm/q2-task-2.png)<!-- -->
 
+``` r
+gapminder%>%filter(country == "Kuwait")
+```
+
+    ## # A tibble: 12 × 6
+    ##    country continent  year lifeExp     pop gdpPercap
+    ##    <fct>   <fct>     <int>   <dbl>   <int>     <dbl>
+    ##  1 Kuwait  Asia       1952    55.6  160000   108382.
+    ##  2 Kuwait  Asia       1957    58.0  212846   113523.
+    ##  3 Kuwait  Asia       1962    60.5  358266    95458.
+    ##  4 Kuwait  Asia       1967    64.6  575003    80895.
+    ##  5 Kuwait  Asia       1972    67.7  841934   109348.
+    ##  6 Kuwait  Asia       1977    69.3 1140357    59265.
+    ##  7 Kuwait  Asia       1982    71.3 1497494    31354.
+    ##  8 Kuwait  Asia       1987    74.2 1891487    28118.
+    ##  9 Kuwait  Asia       1992    75.2 1418095    34933.
+    ## 10 Kuwait  Asia       1997    76.2 1765345    40301.
+    ## 11 Kuwait  Asia       2002    76.9 2111561    35110.
+    ## 12 Kuwait  Asia       2007    77.6 2505559    47307.
+
 **Observations**:
 
 - Oceania displays the highest average GDP per capita, but it also has
@@ -230,8 +254,13 @@ gapminder %>%
   made it very hard to find observations otherwise. To solve, this, I
   isolated that data point to see which country it was. It turned out to
   be Kuwait, and when I looked up Kuwaits gdp percapita was in 1952, I
-  found that it wasn’t even tracked until 1962. This means I could
-  filter it out from my graph.
+  found that it wasn’t even tracked until 1962 when I looked at a couple
+  different datasets (<https://statbase.org/data/kwt-gdp-per-capita/>)
+  (<https://www.macrotrends.net/global-metrics/countries/kwt/kuwait/gdp-per-capita>).
+  The numbers were also WAY different. I think that this gapminder
+  dataset has incorrect values for Kuwait. Someone else on github also
+  found this issue: <https://github.com/jennybc/gapminder/issues/9>.
+  This means I could filter it out from my graph.
 - I chose a boxplot because boxplots give me a lot more information to
   look at rather than just raw points. Seeing each quartile allowed me
   to make more observations about trends and which values are truly
@@ -242,12 +271,19 @@ gapminder %>%
 ``` r
 library(ggrepel)
 ## TASK: Identify the outliers from q2
-outlier_africa <- gapminder %>% filter(continent == "Africa", gdpPercap > 3000, year == year_min)
-outlier_americas <- gapminder %>% filter(continent == "Americas", gdpPercap > 7500, year == year_min)
-outlier_asia <- gapminder %>% filter(continent == "Asia", gdpPercap > 5000 & gdpPercap < 100000, year == year_min)
-outlier_europe <- gapminder %>% filter(continent == "Europe", gdpPercap > 12500, year == year_min)
-combined <- rbind(outlier_africa, outlier_americas, outlier_asia, outlier_europe)
-combined
+outlier_africa <- gapminder %>% 
+  filter(continent == "Africa", gdpPercap > 3000, year == year_min)
+
+outlier_americas <- gapminder %>% 
+  filter(continent == "Americas", gdpPercap > 7500, year == year_min)
+
+outlier_asia <- gapminder %>% 
+  filter(continent == "Asia", gdpPercap > 5000 & gdpPercap < 100000, year == year_min)
+
+outlier_europe <- gapminder %>% 
+  filter(continent == "Europe", gdpPercap > 12500, year == year_min)
+
+rbind(outlier_africa, outlier_americas, outlier_asia, outlier_europe)
 ```
 
     ## # A tibble: 9 × 6
@@ -303,11 +339,8 @@ gapminder %>%
   filter(
     year == year_max | year == year_min,
     gdpPercap < 100000) %>%
-  ggplot(aes(continent, gdpPercap, group = str_c(year, continent))) +
-  geom_boxplot(
-    aes(fill = year),
-    position = "dodge"
-  ) + 
+  ggplot(aes(continent, gdpPercap, group = str_c(continent))) +
+  geom_boxplot() + 
   geom_point(
     data = . %>% filter(
       country %in% c("Angola", "Gabon", "South Africa", "Canada", "United States", "Venezuela", "Bahrain", "Saudi Arabia", "Switzerland"),
@@ -315,7 +348,9 @@ gapminder %>%
     mapping = aes(color = country),
     size = 2,
     position = position_dodge(width = 0.75)
-  )
+  ) +
+  scale_y_log10()+
+  facet_wrap(vars(year))
 ```
 
 ![](c04-gapminder-assignment_files/figure-gfm/q4-task-1.png)<!-- -->
@@ -376,51 +411,42 @@ gapminder %>%
 
 ``` r
 ## TASK: Your second graph
-quartiles <- gapminder %>%
+m_africa <- gapminder %>%
+  filter(continent == "Africa") %>%
   group_by(year) %>%
-  summarize(
-    bottom = quantile(lifeExp, 0),
-    quart1 = quantile(lifeExp, .25),
-    quart2 = quantile(lifeExp, .5),
-    quart3 = quantile(lifeExp, .75),
-    top = quantile(lifeExp, 1)
-  ) %>%
-  pivot_longer(
-    names_to = "quartile",
-    values_to = "lifeExp",
-    cols = -year
-  )
-quartiles
+  summarize(mean_lifeExp = mean(lifeExp, na.rm = TRUE),
+            continent = "Africa")
+
+m_asia <- gapminder %>%
+  filter(continent == "Asia") %>%
+  group_by(year) %>%
+  summarize(mean_lifeExp = mean(lifeExp, na.rm = TRUE),
+            continent = "Asia")
+
+m_americas <- gapminder %>%
+  filter(continent == "Americas") %>%
+  group_by(year) %>%
+  summarize(mean_lifeExp = mean(lifeExp, na.rm = TRUE),
+            continent = "Americas")
+
+m_europe <- gapminder %>%
+  filter(continent == "Europe") %>%
+  group_by(year) %>%
+  summarize(mean_lifeExp = mean(lifeExp, na.rm = TRUE),
+            continent = "Europe")
+
+m_oceania <- gapminder %>%
+  filter(continent == "Oceania") %>%
+  group_by(year) %>%
+  summarize(mean_lifeExp = mean(lifeExp, na.rm = TRUE),
+            continent = "Oceania")
+
+lifeExp_by_continent <- rbind(m_africa, m_asia, m_americas, m_europe, m_oceania)
+
+lifeExp_by_continent %>% 
+  ggplot(aes(year, mean_lifeExp)) +
+  geom_line(aes(color = continent))
 ```
-
-    ## # A tibble: 60 × 3
-    ##     year quartile lifeExp
-    ##    <int> <chr>      <dbl>
-    ##  1  1952 bottom      28.8
-    ##  2  1952 quart1      39.1
-    ##  3  1952 quart2      45.1
-    ##  4  1952 quart3      59.8
-    ##  5  1952 top         72.7
-    ##  6  1957 bottom      30.3
-    ##  7  1957 quart1      41.2
-    ##  8  1957 quart2      48.4
-    ##  9  1957 quart3      63.0
-    ## 10  1957 top         73.5
-    ## # ℹ 50 more rows
-
-``` r
-gapminder %>% 
-  ggplot(aes(year, lifeExp)) +
-  geom_boxplot(aes(group = year)) +
-  geom_point(aes(color = continent)) +
-  geom_line(data = quartiles, aes(linetype = quartile), color = "blue", size = 1)
-```
-
-    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-    ## ℹ Please use `linewidth` instead.
-    ## This warning is displayed once per session.
-    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-    ## generated.
 
 ![](c04-gapminder-assignment_files/figure-gfm/q5-task2-1.png)<!-- -->
 
@@ -435,19 +461,13 @@ gapminder %>%
     ## 1 Rwanda  Africa     1992    23.6 7290203      737.
 
 - This graph tries to see if there is a difference in the life
-  expectancy growth between different quartiles.
-- The outlier in 1992 is Rwanda. At face value this can be explained by
-  their civil war ranging from 1990-1993, but according to a quick
-  google search the number of people it killed before 1992 was in the
-  thousands, maybe tens of thousands. However, Rwanda’s population at
-  that time was north of 7 million. This suggests that this could be
-  inaccurate data, and a google search supports that fact.
-- There doesn’t seem to be a major disparity in growth, except both the
-  0% line and the 25% line plateau after the 90s. There doesn’t seem to
-  be an easy answer to support why that is.
-- The median has experienced the most growth out of all the quartiles.
-  Life expectancy has gone up from ~45 to ~72.
-- African countries are overly represented in the bottom 2 quartiles.
+  expectancy growth between different continents.
+- There seems to be a clear divide between continents: Oceania -\>
+  Europe -\> Americas -\> Asia -\> Africa.
+- The gap seems to only be getting wider between africa and the 4 other
+  continent groups. The 4 content groups seem to have, in general,
+  converged, but Africa has plateaued since 1987 to the point where its
+  considered an outlier by R in a dataset of 5.
 
 ``` r
 ## TASK: Your third graph
@@ -519,8 +539,8 @@ gapminder %>%
 
 ![](c04-gapminder-assignment_files/figure-gfm/q5-task3-1.png)<!-- -->
 
-- Since Africa being grouped together in the bottom 50% of our data for
-  our other two graphs, I wanted to take a little bit of a closer look.
+- Since Africa seems to be much lower than the other continents in the
+  previous graph, I wanted to take a closer look at just Africa.
 - The two countries that appear at the top of life expectancy for Africa
   are Reunion and Mauritius which are both tiny islands off the coast of
   Madagascar. Both of these populations are around 1 million, and they
@@ -529,6 +549,14 @@ gapminder %>%
   Rwanda, Zambia, and Swaziland (Eswatini). I wanted to see if there was
   some geographical trend between the lowest life expectancy but I
   didn’t see any.
+- The outlier in 1992 is Rwanda, and this value seems much lower than
+  all of the others. At face value this can be explained by their civil
+  war ranging from 1990-1993, but according to a quick google search the
+  number of people it killed before 1992 was in the thousands, maybe
+  tens of thousands. However, Rwanda’s population at that time was north
+  of 7 million. This suggests that this could be inaccurate data, and a
+  google search supports that fact. This in addition to the Kuwait issue
+  is something I can’t explain.
 - Another cause I hypothesized was the decolonization period that led to
   a lot of civil wars could explain the difference, but all of these
   countries had civil wars around the same time (1960s-1970s), so that
