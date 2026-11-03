@@ -1,7 +1,7 @@
 ---
 title: "US Income"
-author: "(Your name here)"
-date: 202X-XX-XX
+author: "Trevor McDonald"
+date: 2026-10-31
 output:
   github_document:
     toc: true
@@ -50,7 +50,7 @@ library(tidyverse)
 
 ```{r q1-task}
 ## TODO: Give the filename for your copy of Table B01003
-filename_pop <- NA_character_
+filename_pop <- "./data/ACSDT5Y2018.B01003-Data.csv"
 
 ## NOTE: No need to edit
 df_pop <-
@@ -80,7 +80,7 @@ This means that for cases listed as `*****` the US Census Bureau recommends trea
 
 ```{r q2-task}
 ## TODO: Give the filename for your copy of Table S1903
-filename_income <- NA_character_
+filename_income <- "./data/ACSST5Y2018.S1903-Data.csv"
 
 ## NOTE: No need to edit
 df_income <-
@@ -121,7 +121,19 @@ df_q3 <-
   ) %>%
   mutate(across(contains("median"), as.numeric)) %>%
 ## TODO: Pivot the data, rename the columns
+  pivot_longer(
+    names_to = c(".value", "category"),
+    names_pattern = "(Estimate|Margin of Error)!!Median income \\(dollars\\).*!!FAMILY INCOME BY FAMILY SIZE!!(.*)",
+    cols = c(-"Geography", -"Geographic Area Name")
+  ) %>%
+  rename(
+    income_estimate = "Estimate",
+    income_moe = "Margin of Error",
+    geographic_area_name = "Geographic Area Name"
+  ) %>%
   glimpse()
+
+df_q3
 ```
 
 Use the following tests to check your work:
@@ -151,6 +163,14 @@ $$\text{MOE} = 1.645 \times \text{SE}.$$
 ### __q4__ Convert the margin of error to standard error. Additionally, compute a 99% confidence interval on income, and normalize the standard error to `income_CV = income_SE / income_estimate`. Provide these columns with the names `income_SE, income_lo, income_hi, income_CV`.
 
 ```{r q4-task}
+
+df_q4 <- df_q3 %>%
+  mutate(
+    income_SE = income_moe/1.645,
+    income_CV = income_SE / income_estimate,
+    income_lo = income_estimate - qnorm(1 - 0.01 / 2) * income_SE,
+    income_hi = income_estimate + qnorm(1 - 0.01 / 2) * income_SE
+  )
 
 df_q4
 ```
@@ -207,7 +227,9 @@ One last wrangling step: We need to join the two datasets so we can compare popu
 
 ```{r q5-task}
 ## TODO: Join df_q4 and df_pop by the appropriate column
-
+df_data <-
+  inner_join(df_q4, df_pop, by = "Geography") %>%
+  select(-"Margin of Error!!Total", -"...5")
 df_data
 ```
 
@@ -246,13 +268,14 @@ df_data %>%
 **Observations**:
 
 - Document your observations here.
-  - (Your response here)
-  - (Your response here)
-  - ...
+  - Families with more people tend to have a more varying confidence interval when compared to families with fewer people. No claim can be made on whether or not people with larger families tend to have a higher or lower median household income as the confidence interval for larger families go beyond the median household income for smaller families on both ends.
+  - Families with 2 people tend to have a lower median income when compared to 3 and 4 person families. I can't make any conclusions on comparing 2 people families with 5 and 6 person families as those two categories have much larger error bars.
+  - Nantucket has the largest median household income confidence interval.
+  - Suffolk has the smallest median household income confidence intervals.
 - Can you confidently distinguish between household incomes in Suffolk county? Why or why not?
-  - (Your response here)
+  - You cannot. This is because the confidence intervals all over lap each other.
 - Which counties have the widest confidence intervals?
-  - (Your response here)
+  - Nantucket has the largest interval, followed by Dukes and Hampshire.
 
 In the next task you'll investigate the relationship between population and uncertainty.
 
@@ -261,14 +284,24 @@ In the next task you'll investigate the relationship between population and unce
 *Hint*: Remember that standard error is a function of *both* variability (e.g. variance) and sample size.
 
 ```{r q7-task}
+df_data %>%
+
+  ggplot(aes(population_estimate, income_SE, color = category)) +
+  geom_point(size = 0.1) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(
+    x = "Population",
+    y = "Income Standard Error"
+  )
 ```
 
 **Observations**:
 
 - What *overall* trend do you see between `SE` and population? Why might this trend exist?
-  - (Your response here)
+  - The lower the standard error, the higher the population. This makes sense because standard error is defined in terms of population. The standard error = sigma/sqrt(n)
 - What does this *overall* trend tell you about the relative ease of studying small vs large counties?
-  - (Your response here)
+  - Estimates for smaller counties will have a larger standard error and wider confidence intervals. Having less certainty here means its harder to make claims with higher confidence.
 
 # Going Further
 <!-- ----------------------------------------------------------------------- -->
@@ -279,11 +312,72 @@ Now it's your turn! You have income data for every county in the United States: 
 
 ```{r q8-task}
 ## TODO: Pose and answer your own question about the data
+df_own <-
+  df_income %>%
+  select(
+    Geography,
+    contains("Geographic"),
+    # This will select only the numeric d-person family columns;
+    # it will ignore the annotation columns
+    contains("HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!") & 
+      contains("One race") & 
+      !contains("Some other race") &
+      !contains("Annotation of")
+  ) %>%
+  mutate(across(contains("median"), as.numeric)) %>%
+## TODO: Pivot the data, rename the columns
+  pivot_longer(
+    names_to = c(".value", "category"),
+    names_pattern = "(Estimate|Margin of Error)!!Median income \\(dollars\\).*!!.*!!.*!!.*!!(.*)",
+    cols = c(-"Geography", -"Geographic Area Name")
+  ) %>%
+  rename(
+    income_estimate = "Estimate",
+    income_moe = "Margin of Error",
+    geographic_area_name = "Geographic Area Name",
+    race = "category"
+  ) %>%
+  drop_na() %>%
+  glimpse()
+
+df_own
+df_plot <-
+  inner_join(df_own, df_pop, by = "Geography") %>%
+  select(-"Margin of Error!!Total", -"...5") %>%
+  filter(!is.na(income_estimate), !is.na(income_moe)) %>%
+  mutate(
+    income_SE = income_moe / 1.645,
+    income_lo = income_estimate - qnorm(1 - 0.01 / 2) * income_SE,
+    income_hi = income_estimate + qnorm(1 - 0.01 / 2) * income_SE,
+    income_cv = income_SE / income_estimate
+  )
+df_plot
+
+df_plot %>%
+  ggplot(aes(fct_reorder(race, income_estimate), income_estimate)) +
+  geom_boxplot() +
+  coord_flip() +
+  labs(x = "Race", y = "Median Income Estimate")
+
+df_plot %>%
+  ggplot(aes(fct_reorder(race, income_cv), income_cv)) +
+  geom_boxplot() +
+  coord_flip() +
+  labs(x = "Race", y = "Normalized Standard Error")
 ```
 
 **Observations**:
 
-- Document your observations here
+Question:
+  - How does income by racial group vary in the United States and how confident are we in that variation?
+  
+Observations:
+  - Across all counties in the US, Asian households have the highest median income estimates followed by Native Hawaiian and Other Pacific Islander, White, American Indian and Alaska Native, and Black or African American households.
+  - We are most confident in the estimate for White households as the normalized standard error for that falls much lower.
+  - American Indian and Alaska Native, and Native Hawaiian and Other Pacific Islander Households have a much higher normalized standard error. This suggests that there are fewer of them in the population making it harder to accurately determine the estimate median income for these households.
+  - For all households besides white households. We have Normalized Standard Error values of over 0.6. This means that on average the standard error is over 60% of the estimate itself. This is a huge value and not one I would trust.
+  - With income, there might be a few really high values that skew the data. The second graph suggests that that is less likely to happen with the White household groups compared to the other household groups. This makes sense as the majority of the US population is White.
+  - To answer the question, The median household income for different racial groups varies a lot. On average, Asian households have the highest median income and Black or African American households have the lowest median income. For a lot of our values however, we cannot be too confident in our estimates due to a high standard error. This is especially clear in the Native Hawaiian and Other Pacific Islander, and American Indian and Alaska Native households. Asian and Black or African American households also have a normalized standard error value in a lot of counties that make it hard to be confident in our median income estimates.
 
 Ideas:
 
