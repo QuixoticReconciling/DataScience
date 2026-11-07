@@ -88,10 +88,10 @@ Congrats! You just *liberated* data from a plot!
 ```{r q4-task}
 ## TODO: Load the data you extracted above
 df_price <- read_csv(
-  "./data/Extracted_beef_price.csv",
+  "./data/beef_price.csv",
   col_names = c("date", "price"))
 df_production <- read_csv(
-  "./data/Extracted_beef_production.csv",
+  "./data/beef_production.csv",
   col_names = c("date", "production"))
 
 df_price
@@ -104,8 +104,10 @@ df_both <-
     by = "date"
   )
 
+df_both
+
 df_both %>%
-  ggplot(aes(production, price)) +
+  ggplot(aes(production, price, color = date)) +
   geom_point()
 
 ```
@@ -113,7 +115,9 @@ df_both %>%
 **Observations**:
 
 - What relationship do you see between price and production levels?
+  - As the months reached summer, the price went up as production went down.
 - Does that relationship change over time?
+  - Price didn't change a lot during the earlier months, but price rose a lot once the production reached -20 units.
 
 <!-- include-exit-ticket -->
 # Exit Ticket
